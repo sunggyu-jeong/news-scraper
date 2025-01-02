@@ -12,7 +12,8 @@
     "build:linux64": "electron-builder --linux --x64",
     "build:win": "npm run build:win32 && npm run build:win64",
     "build:win32": "electron-builder --win --ia32",
-    "build:win64": "electron-builder --win --x64"
+    "build:win64": "electron-builder --win --x64",
+    "server": "concurrently \"npm run serve\" \"node server.js\""
   },
   "build": {
     "productName": "NewsScraper",
@@ -62,12 +63,16 @@
     }
   },
   "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
     "concurrently": "^9.1.2",
     "core-js": "^3.8.3",
+    "cors": "^2.8.5",
+    "electron": "^33.2.1",
+    "express": "^4.21.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0",
-    "electron": "^33.2.1"
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

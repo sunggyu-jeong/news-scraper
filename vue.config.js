@@ -5,4 +5,8 @@ module.exports = defineConfig({
   chainWebpack: (config) => {
     config.devtool("source-map");
   },
+  outputDir: "dist",
+  devServer: {
+    proxy: "http://localhost:3000",
+  },
 });
