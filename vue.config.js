@@ -6,7 +6,4 @@ module.exports = defineConfig({
     config.devtool("source-map");
   },
   outputDir: "dist",
-  devServer: {
-    proxy: "http://localhost:3000",
-  },
 });

@@ -1,6 +1,38 @@
+/* eslint-disable no-await-in-loop */
 // controllers/newsController.js
-const axios = require("axios");
-const cheerio = require("cheerio");
+const puppeteer = require("puppeteer");
+
+// 무한 스크롤 처리
+const waitForTimeout = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
+
+/**
+ * 요청 유효성 검사
+ * @param {Object} req - 요청 정보
+ * @param {Object} res - 응답 정보
+ * @returns {boolean} - 유효성 검사 통과 여부
+ */
+const validateRequest = (req, res) => {
+  const { query, startDate, endDate } = req.query;
+  if (!query) {
+    res.status(400).json({
+      status: 400,
+      message: "검색어를 입력하세요.",
+      messageDev: "사용자의 검색어 입력 오류",
+    });
+    return false;
+  }
+
+  if (!startDate || !endDate) {
+    res.status(400).json({
+      status: 400,
+      message: "검색 시작일과 종료일을 입력하세요.",
+      messageDev: "날짜 필터 입력 누락",
+    });
+    return false;
+  }
+
+  return true;
+};
 
 /**
  * 뉴스 크롤링 로직
@@ -8,38 +40,75 @@ const cheerio = require("cheerio");
  * @param {Object} res - 응답 정보
  */
 exports.getNews = async (req, res) => {
-  const { query } = req.query;
-  if (!query) {
-    return res.status(400).json({
-      status: 400,
-      message: "검색어를 입력하세요.",
-      messageDev: "사용자의 검색어 입력 오류",
-    });
-  }
+  if (!validateRequest(req, res)) return;
+  const { query, startDate, endDate } = req.query;
 
   try {
-    const response = await axios.get(
-      `https://search.naver.com/search.naver?ssc=tab.news.all&where=news&sm=tab_jum&query=${encodeURIComponent(
-        query
-      )}`
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     );
-    const $ = cheerio.load(response.data);
-    const newsList = [];
-    $("#main_pack > div.news_area._main_news > ul > li").each((i, el) => {
-      const title = $(el).find(".news_tit > a").text().trim();
-      const link = $(el).find(".news_tit > a").attr("href");
-      const description = $(el).find(".news_desc").text().trim();
-      const source = $(el).find(".info_group .press").text();
-      newsList.push({ title, link, description, source });
+
+    // 날짜 필터 적용
+    const searchUrl = `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(
+      query
+    )}&ds=${startDate}&de=${endDate}&sort=0&field=0&photo=0&nso=so%3Ar%2Cp%3Afrom${startDate.replace(
+      /-/g,
+      ""
+    )}to${endDate.replace(/-/g, "")}`;
+    console.log(">>>>>>>> searchUrl", searchUrl);
+    await page.goto(searchUrl, { waitUntil: "networkidle2" });
+    let scrollAttempts = 0;
+    const maxScrollAttempts = 30;
+
+    let previousHeight = await page.evaluate(() => document.body.scrollHeight);
+    console.log(">>>>>>>> previousHeight", previousHeight);
+    while (true) {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await waitForTimeout(100); // 스크롤 로딩 대기
+      const newHeight = await page.evaluate(() => document.body.scrollHeight);
+
+      console.log(">>>>>>>> previeousHeight and newHeight", previousHeight, newHeight);
+      if (newHeight === previousHeight) break; // 더 이상 스크롤되지 않을 때 종료
+      previousHeight = newHeight;
+      scrollAttempts += 1;
+      if (scrollAttempts > maxScrollAttempts) {
+        console.error("너무 많은 스크롤링이 감지되어 중지되었습니다.");
+        break;
+      }
+    }
+
+    console.log(">>>>>>>> newsList", page);
+    // 뉴스 데이터 추출
+    const newsList = await page.evaluate(() => {
+      const newsItems = [];
+      document.querySelectorAll("#main_pack .list_news .bx").forEach((el) => {
+        const title = el.querySelector(".news_tit")?.innerText || "";
+        const link = el.querySelector(".news_tit")?.href || "";
+        const description = el.querySelector(".news_dsc")?.innerText || "";
+        const source = el.querySelector(".info_group .press")?.innerText || "";
+        const date = el.querySelector(".info_group .info")?.innerText || "";
+        if (title && link) {
+          newsItems.push({ title, link, description, source, date });
+        }
+      });
+      return newsItems;
     });
-    res.json(newsList);
+
+    await browser.close();
+    return res.status(200).json({
+      status: 200,
+      message: "success",
+      messageDev: "뉴스 데이터 크롤링 성공",
+      data: newsList,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("크롤링 중 오류 발생:", error);
     return res.status(500).json({
       status: 500,
       message: "크롤링 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
       error: "크롤링 오류 발생",
     });
   }
-  return res;
 };
