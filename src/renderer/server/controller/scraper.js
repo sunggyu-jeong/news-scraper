@@ -1,9 +1,9 @@
+/* eslint-disable import/order */
+/* eslint-disable import/extensions */
 /* eslint-disable no-await-in-loop */
 // controllers/newsController.js
+const { waitForTimeout } = require("../../../shared/utils.js");
 const puppeteer = require("puppeteer");
-
-// 무한 스크롤 처리
-const waitForTimeout = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
 /**
  * 요청 유효성 검사
@@ -60,17 +60,15 @@ exports.getNews = async (req, res) => {
     console.log(">>>>>>>> searchUrl", searchUrl);
     await page.goto(searchUrl, { waitUntil: "networkidle2" });
     let scrollAttempts = 0;
-    const maxScrollAttempts = 30;
+    const maxScrollAttempts = 10;
 
     let previousHeight = await page.evaluate(() => document.body.scrollHeight);
-    console.log(">>>>>>>> previousHeight", previousHeight);
-    while (true) {
+    while (scrollAttempts <= maxScrollAttempts) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await waitForTimeout(100); // 스크롤 로딩 대기
+      await waitForTimeout(1000); // 스크롤 로딩 대기
       const newHeight = await page.evaluate(() => document.body.scrollHeight);
 
       console.log(">>>>>>>> previeousHeight and newHeight", previousHeight, newHeight);
-      if (newHeight === previousHeight) break; // 더 이상 스크롤되지 않을 때 종료
       previousHeight = newHeight;
       scrollAttempts += 1;
       if (scrollAttempts > maxScrollAttempts) {
@@ -97,7 +95,7 @@ exports.getNews = async (req, res) => {
     });
 
     await browser.close();
-    return res.status(200).json({
+    res.status(200).json({
       status: 200,
       message: "success",
       messageDev: "뉴스 데이터 크롤링 성공",
@@ -105,7 +103,7 @@ exports.getNews = async (req, res) => {
     });
   } catch (error) {
     console.error("크롤링 중 오류 발생:", error);
-    return res.status(500).json({
+    res.status(500).json({
       status: 500,
       message: "크롤링 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
       error: "크롤링 오류 발생",

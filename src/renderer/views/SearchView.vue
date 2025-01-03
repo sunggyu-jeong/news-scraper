@@ -2,7 +2,7 @@
 <template>
   <div class="search">
     <h1 class="title">이 페이지는 검색 페이지입니다.</h1>
-    <div class="search-form">
+    <div class="search-form" onclick="document.querySelector('.search-input').focus()">
       <svg
         class="search-icon"
         focusable="false"
@@ -36,9 +36,11 @@ export default {
 
     const handleSearch = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/search", {
+        const response = await axios.get("http://localhost:3000/api/news", {
           params: {
             query: searchQuery.value,
+            startDate: "2024.12.01",
+            endDate: "2024.12.31",
           },
         });
         console.log(">>>>>>>>>>>>>>> ", response);
@@ -59,12 +61,12 @@ export default {
 .search {
   text-align: center;
   display: flex;
-  justify-content: center;
   flex-direction: column;
   height: 100%;
   .title {
     margin: 0;
     width: 100%;
+    margin-top: 300px;
   }
 
   .search-form {

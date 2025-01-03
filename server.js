@@ -1,10 +1,13 @@
+/* eslint-disable import/extensions */
 import helmet from "helmet";
 import express, { json } from "express";
+import cors from "cors";
 import apiRoutes from "./src/renderer/router/apiRoutes.js";
 
 const app = express()
   .use(json())
   .use(helmet())
+  .use(cors())
   .use("/api", apiRoutes)
   .use(
     helmet({
