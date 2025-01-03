@@ -74,6 +74,7 @@
     "helmet-csp": "^4.0.0",
     "puppeteer": "^23.11.1",
     "vue": "^3.2.13",
+    "vue-loading-overlay": "^6.0.6",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },

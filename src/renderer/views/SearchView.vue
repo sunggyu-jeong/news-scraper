@@ -2,7 +2,7 @@
 <template>
   <div class="search">
     <h1 class="title">이 페이지는 검색 페이지입니다.</h1>
-    <div class="search-form" onclick="document.querySelector('.search-input').focus()">
+    <div class="search-form">
       <svg
         class="search-icon"
         focusable="false"
@@ -37,25 +37,29 @@ export default {
     const news = computed(() => store.getters.news);
 
     const handleSearch = async () => {
+      store.dispatch("toggleLoading", true);
       await store.dispatch("fetchNews", {
         query: searchQuery.value,
         startDate: "2024.12.01",
         endDate: "2024.12.31",
       });
+      store.dispatch("toggleLoading", false);
     };
 
-    watch(
-      () => store.state.news,
-      (newValue) => {
-        console.log("News updated:", newValue);
-      }
-    );
+    watch(news, (newValue) => {
+      console.log("News updated:", newValue);
+    });
 
     return {
       searchQuery,
       handleSearch,
       news,
     };
+  },
+  methods: {
+    onCancel() {
+      console.log("onCancel");
+    },
   },
 };
 </script>
@@ -71,7 +75,6 @@ export default {
     width: 100%;
     margin-top: 300px;
   }
-
   .search-form {
     display: flex;
     z-index: 3;

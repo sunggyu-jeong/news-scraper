@@ -1,7 +1,26 @@
 <template>
   <router-view />
+  <LoadingBar class="loading-bar" :isLoading="isLoading" />
 </template>
 
+<script>
+import { computed } from "vue";
+import { useStore } from "vuex";
+import LoadingBar from "./LoadingBar.vue";
+
+export default {
+  components: {
+    LoadingBar,
+  },
+  setup() {
+    const store = useStore();
+    const isLoading = computed(() => store.state.isLoading);
+    return {
+      isLoading,
+    };
+  },
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
