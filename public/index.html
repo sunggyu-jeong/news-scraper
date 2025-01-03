@@ -1,25 +1,16 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="ko">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>News Scraper</title>
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; object-src 'none';"
+      content="default-src 'self'; connect-src 'self' ws://192.168.0.33:8080 http://localhost:3000 http://localhost:8080; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
     />
-    <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <noscript>
-      <strong
-        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
-        properly without JavaScript enabled. Please enable it to
-        continue.</strong
-      >
-    </noscript>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <script src="main.js"></script>
   </body>
 </html>

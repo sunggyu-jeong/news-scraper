@@ -13,6 +13,8 @@ module.exports = {
     quotes: "off",
     "comma-dangle": "off",
     "object-curly-newline": "off",
+    "newline-per-chained-call": "off",
+    "no-unused-vars": "warn",
   },
   overrides: [
     {
