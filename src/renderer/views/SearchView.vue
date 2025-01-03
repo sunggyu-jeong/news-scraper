@@ -26,32 +26,35 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import axios from "axios";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vuex";
 
 export default {
   name: "SearchBar",
   setup() {
     const searchQuery = ref("");
+    const store = useStore();
+    const news = computed(() => store.getters.news);
 
     const handleSearch = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/news", {
-          params: {
-            query: searchQuery.value,
-            startDate: "2024.12.01",
-            endDate: "2024.12.31",
-          },
-        });
-        console.log(">>>>>>>>>>>>>>> ", response);
-      } catch (error) {
-        console.error(error);
-      }
+      await store.dispatch("fetchNews", {
+        query: searchQuery.value,
+        startDate: "2024.12.01",
+        endDate: "2024.12.31",
+      });
     };
+
+    watch(
+      () => store.state.news,
+      (newValue) => {
+        console.log("News updated:", newValue);
+      }
+    );
 
     return {
       searchQuery,
       handleSearch,
+      news,
     };
   },
 };
