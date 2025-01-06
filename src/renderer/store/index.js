@@ -32,7 +32,7 @@ export default createStore({
             endDate,
           },
         });
-        commit("setNews", repsonse.data);
+        commit("setNews", repsonse.data.data);
       } catch (error) {
         console.error(error);
       }
