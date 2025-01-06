@@ -1,17 +1,30 @@
 <template>
   <header class="sub-header">
     <div class="header-wrap">
-      <button v-if="btnShow" type="button" class="btn btn-back" @click="navigateToPreviousPage">
-        뒤로가기
+      <button
+        class="btn btn-home"
+        @click="navigateToPreviousPage"
+        @keydown.enter="navigateToPreviousPage"
+        tabindex="0"
+      >
+        <img src="../../assets/img/back_arrow.png" alt="뒤로가기" class="btn btn-back" />
       </button>
-      <h1>{{ props.title }}</h1>
+
+      <h1 class="title">{{ props.title }}</h1>
+
+      <!-- <button
+        v-if="btnShow"
+        class="btn btn-right"
+        @click="navigateToSearchPage"
+        @keydown.enter="navigateToSearchPage"
+      /> -->
     </div>
   </header>
 </template>
 
 <script setup>
 import { defineProps } from "vue";
-import navigateToPreviousPage from "@/shared/utils";
+import { navigateToPreviousPage } from "../../../shared/utils";
 
 const props = defineProps({
   title: String,
@@ -25,7 +38,8 @@ const props = defineProps({
 <style lang="scss" scoped>
 .sub-header {
   width: 100%;
-  height: 48px;
+  height: 40px;
+  top: 0;
   position: fixed;
   background-color: white;
   z-index: 999;
@@ -36,36 +50,42 @@ const props = defineProps({
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    h1 {
+
+    .btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 30px;
+      width: 30px;
+      display: flex;
+      background: #fff;
+      border: none;
+    }
+
+    .btn-back {
+      width: 75%;
+      height: 75%;
+    }
+
+    .btn-home {
+      left: 0;
+    }
+
+    .btn-right {
+      right: 0;
+    }
+
+    .title {
       font-size: 16px;
       font-family: "Pretendard-Bold";
       color: #333d48;
-      text-align: center;
-      display: inline-block;
-    }
-    .btn {
-      position: absolute;
-      top: 0;
-      min-width: 48px;
-      height: 48px;
+      margin: 0;
       display: flex;
-      font-size: 0;
-      &.btn-back {
-        left: 0;
-        &::before {
-          content: "";
-          width: 100%;
-          height: 100%;
-          display: block;
-          mask: url("../../assets/img/icon/right_arrow.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: 32px;
-          transform: rotate(-180deg);
-          background: #333d48;
-        }
-      }
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }

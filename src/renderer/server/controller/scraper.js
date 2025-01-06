@@ -42,6 +42,7 @@ const validateRequest = (req, res) => {
 exports.getNews = async (req, res) => {
   if (!validateRequest(req, res)) return;
   const { query, startDate, endDate } = req.query;
+  const searchQuery = encodeURIComponent(query);
 
   try {
     const browser = await puppeteer.launch({ headless: true });
@@ -51,9 +52,7 @@ exports.getNews = async (req, res) => {
     );
 
     // 날짜 필터 적용
-    const searchUrl = `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(
-      query
-    )}&ds=${startDate}&de=${endDate}&sort=0&field=0&photo=0&nso=so%3Ar%2Cp%3Afrom${startDate.replace(
+    const searchUrl = `https://search.naver.com/search.naver?where=news&query=${searchQuery}&ds=${startDate}&de=${endDate}&sort=0&field=0&photo=0&nso=so%3Ar%2Cp%3Afrom${startDate.replace(
       /\./g,
       ""
     )}to${endDate.replace(/\./g, "")}`;
@@ -70,30 +69,31 @@ exports.getNews = async (req, res) => {
 
       console.log(">>>>>>>> previeousHeight and newHeight", previousHeight, newHeight);
       previousHeight = newHeight;
-      scrollAttempts += 1;
       if (scrollAttempts > maxScrollAttempts) {
         console.error("너무 많은 스크롤링이 감지되어 중지되었습니다.");
         break;
       }
+      scrollAttempts += 1;
     }
 
-    console.log(">>>>>>>> newsList", page);
     // 뉴스 데이터 추출
-    const newsList = await page.evaluate(() => {
+    const newsList = await page.evaluate((kwd) => {
       const newsItems = [];
       document.querySelectorAll("#main_pack .list_news .bx").forEach((el) => {
+        const newsType = "네이버뉴스";
+        const keyword = kwd;
+        const source = el.querySelector(".info_group .press")?.innerText || "";
         const title = el.querySelector(".news_tit")?.innerText || "";
         const link = el.querySelector(".news_tit")?.href || "";
         const description = el.querySelector(".news_dsc")?.innerText || "";
-        const source = el.querySelector(".info_group .press")?.innerText || "";
-        const date = el.querySelector(".info_group .info")?.innerText || "";
+        const date = el.querySelector(".info_group .date")?.innerText || "";
+
         if (title && link) {
-          newsItems.push({ title, link, description, source, date });
+          newsItems.push({ newsType, keyword, source, title, link, description, date });
         }
       });
       return newsItems;
-    });
-
+    }, query);
     await browser.close();
     res.status(200).json({
       status: 200,

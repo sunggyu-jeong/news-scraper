@@ -53,7 +53,7 @@ const handleReturn = () => {
     background-color: #333;
     color: white;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 }
 </style>
