@@ -22,17 +22,32 @@
         @keypress.enter="handleSearch"
       />
     </div>
+    <div class="pre-search-form">
+      <button class="pre-search-list" @click="test">검색정보 설정</button>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { isEmpty } from "@/shared/utils";
 import { computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+// 검색어를 저장하는 변수
 const searchQuery = ref("");
+// Vuex store에서 news state를 가져옵니다.
 const store = useStore();
+// news state를 computed property로 가져옵니다.
 const news = computed(() => store.getters.news);
+// Vue Router를 가져옵니다.
+const router = useRouter();
 
+/**
+ * 검색어를 입력하고 엔터를 누르면 검색을 수행합니다.
+ *
+ * @throws {Error}
+ */
 const handleSearch = async () => {
   try {
     store.dispatch("toggleLoading", true);
@@ -41,7 +56,7 @@ const handleSearch = async () => {
       startDate: "2024.12.01",
       endDate: "2024.12.31",
     });
-    window.electron.ipcRenderer.send("show-notification", {
+    window?.electron?.ipcRenderer?.send("show-notification", {
       title: "검색 완료",
       body: "뉴스 검색이 완료되었습니다.",
     });
@@ -52,8 +67,18 @@ const handleSearch = async () => {
   }
 };
 
+const test = () => {
+  router.push("/results");
+};
+
 watch(news, (newValue) => {
-  console.log("News updated:", newValue);
+  // 검색 결과가 없으면 메세지를 표출 한 후 종료합니다.
+  if (isEmpty(newValue)) {
+    console.log("검색 결과가 없습니다.");
+    return;
+  }
+  // 검색 결과가 있으면 "/result" 경로로 이동합니다.
+  router.push("/results");
 });
 </script>
 
@@ -101,6 +126,20 @@ watch(news, (newValue) => {
       height: 20px;
       fill: #000;
       align-items: center;
+    }
+  }
+  .pre-search-form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    .pre-search-list {
+      padding: 10px 20px;
+      width: auto;
+      background-color: #fff;
+      border: 0;
+      text-decoration: underline blue;
+      text-underline-offset: 3px;
+      color: blue;
     }
   }
 }

@@ -54,9 +54,9 @@ exports.getNews = async (req, res) => {
     const searchUrl = `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(
       query
     )}&ds=${startDate}&de=${endDate}&sort=0&field=0&photo=0&nso=so%3Ar%2Cp%3Afrom${startDate.replace(
-      /-/g,
+      /\./g,
       ""
-    )}to${endDate.replace(/-/g, "")}`;
+    )}to${endDate.replace(/\./g, "")}`;
     console.log(">>>>>>>> searchUrl", searchUrl);
     await page.goto(searchUrl, { waitUntil: "networkidle2" });
     let scrollAttempts = 0;
