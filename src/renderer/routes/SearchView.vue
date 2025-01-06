@@ -1,5 +1,6 @@
 <!-- eslint-disable max-len -->
 <template>
+  <context-holder />
   <div class="search">
     <h1 class="title">이 페이지는 검색 페이지입니다.</h1>
     <div class="search-form">
@@ -21,6 +22,9 @@
         placeholder="검색어를 입력하세요"
         @keypress.enter="handleSearch"
       />
+      <section class="delete-section" v-if="showDeleteButton">
+        <button class="delete-button" @click="clearSearchResults">X</button>
+      </section>
     </div>
     <div class="pre-search-form">
       <button class="pre-search-list" @click="test">검색정보 설정</button>
@@ -33,15 +37,18 @@ import { isEmpty } from "@/shared/utils";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { message } from "ant-design-vue";
 
 // 검색어를 저장하는 변수
 const searchQuery = ref("");
 // Vuex store에서 news state를 가져옵니다.
 const store = useStore();
 // news state를 computed property로 가져옵니다.
-const news = computed(() => store.getters.news);
+const news = computed(() => store.state.news);
 // Vue Router를 가져옵니다.
 const router = useRouter();
+// 검색어가 입력됨을 감지하고, 검색어가 입력되면 초기화 버튼을 생성합니다.
+const showDeleteButton = computed(() => !isEmpty(searchQuery.value));
 
 /**
  * 검색어를 입력하고 엔터를 누르면 검색을 수행합니다.
@@ -56,10 +63,13 @@ const handleSearch = async () => {
       startDate: "2024.12.01",
       endDate: "2024.12.31",
     });
-    window?.electron?.ipcRenderer?.send("show-notification", {
-      title: "검색 완료",
-      body: "뉴스 검색이 완료되었습니다.",
-    });
+    // Electron에서만 동작합니다.
+    if (!isEmpty(window?.electron?.ipcRenderer)) {
+      window?.electron?.ipcRenderer?.send("show-notification", {
+        title: "검색 완료",
+        body: "뉴스 검색이 완료되었습니다.",
+      });
+    }
   } catch (error) {
     console.log(error);
   } finally {
@@ -67,14 +77,22 @@ const handleSearch = async () => {
   }
 };
 
+/**
+ * 검색어를 초기화합니다.
+ */
+const clearSearchResults = () => {
+  searchQuery.value = "";
+};
+
 const test = () => {
   router.push("/results");
 };
 
 watch(news, (newValue) => {
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", newValue);
   // 검색 결과가 없으면 메세지를 표출 한 후 종료합니다.
   if (isEmpty(newValue)) {
-    console.log("검색 결과가 없습니다.");
+    message.error("검색 결과가 없습니다.");
     return;
   }
   // 검색 결과가 있으면 "/result" 경로로 이동합니다.
@@ -110,8 +128,7 @@ watch(news, (newValue) => {
     align-items: center;
     .search-input {
       height: 40px;
-      width: auto;
-      max-width: 1300px;
+      width: 80%;
       border: none;
       display: flex;
       justify-content: center;
@@ -122,10 +139,25 @@ watch(news, (newValue) => {
     }
     .search-icon {
       margin: 10px;
-      width: 20px;
+      width: 20px !important;
       height: 20px;
       fill: #000;
       align-items: center;
+    }
+    .delete-section {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      .delete-button {
+        width: 20px;
+        height: 20px;
+        border: none;
+        background-color: transparent;
+        color: #000;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 8px;
+      }
     }
   }
   .pre-search-form {

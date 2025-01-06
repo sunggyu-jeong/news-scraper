@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { isEmpty } from "@/shared/utils";
-import SearchView from "../views/SearchView.vue";
-import ResultView from "../views/ResultView.vue";
-import ErrorView from "../views/ErrorView.vue";
+import SearchView from "../routes/SearchView.vue";
+import ResultView from "../routes/ResultView.vue";
+import ErrorView from "../routes/ErrorView.vue";
 
 const routes = [
   {

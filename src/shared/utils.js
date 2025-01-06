@@ -1,3 +1,5 @@
+import { useRouter } from "vue-router";
+
 /**
  * 주어진 값이 비어있는 지 확인합니다.
  *
@@ -69,3 +71,24 @@ export const waitForTimeout = (timeout) =>
   new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
+
+/**
+ * 이전 화면으로 이동
+ * step: 이전 화면으로 이동할 depth 갯수. 기본값은 -1.
+ * step > 0이면 기본값으로 -1을 사용하고, 음수일 경우 그 값만큼 이동.
+ *
+ * @example
+ * goBack(): 직전화면 이동, goBack(-2): 2단계 전 화면 이동
+ */
+export const navigateToPreviousPage = (step = -1) => {
+  const router = useRouter();
+  let stepValue = step;
+
+  // step이 음수가 아니면 기본값 -1을 설정
+  if (typeof step !== "number" || step >= 0) {
+    stepValue = -1;
+  }
+
+  // $router.go()에 step 값으로 이동
+  router.go(stepValue);
+};
