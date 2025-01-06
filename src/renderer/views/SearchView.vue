@@ -25,43 +25,36 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 
-export default {
-  name: "SearchBar",
-  setup() {
-    const searchQuery = ref("");
-    const store = useStore();
-    const news = computed(() => store.getters.news);
+const searchQuery = ref("");
+const store = useStore();
+const news = computed(() => store.getters.news);
 
-    const handleSearch = async () => {
-      store.dispatch("toggleLoading", true);
-      await store.dispatch("fetchNews", {
-        query: searchQuery.value,
-        startDate: "2024.12.01",
-        endDate: "2024.12.31",
-      });
-      store.dispatch("toggleLoading", false);
-    };
-
-    watch(news, (newValue) => {
-      console.log("News updated:", newValue);
+const handleSearch = async () => {
+  try {
+    store.dispatch("toggleLoading", true);
+    await store.dispatch("fetchNews", {
+      query: searchQuery.value,
+      startDate: "2024.12.01",
+      endDate: "2024.12.31",
     });
-
-    return {
-      searchQuery,
-      handleSearch,
-      news,
-    };
-  },
-  methods: {
-    onCancel() {
-      console.log("onCancel");
-    },
-  },
+    window.electron.ipcRenderer.send("show-notification", {
+      title: "검색 완료",
+      body: "뉴스 검색이 완료되었습니다.",
+    });
+  } catch (error) {
+    console.log(error);
+  } finally {
+    store.dispatch("toggleLoading", false);
+  }
 };
+
+watch(news, (newValue) => {
+  console.log("News updated:", newValue);
+});
 </script>
 
 <style lang="scss" scoped>

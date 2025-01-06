@@ -37,9 +37,9 @@ export default {
   .spinner {
     border: 8px solid rgba(0, 0, 0, 0.1);
     border-top: 8px solid #33383a;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    border-radius: 90%;
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
   }
 

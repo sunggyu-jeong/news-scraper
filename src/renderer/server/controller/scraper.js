@@ -60,7 +60,7 @@ exports.getNews = async (req, res) => {
     console.log(">>>>>>>> searchUrl", searchUrl);
     await page.goto(searchUrl, { waitUntil: "networkidle2" });
     let scrollAttempts = 0;
-    const maxScrollAttempts = 10;
+    const maxScrollAttempts = 1;
 
     let previousHeight = await page.evaluate(() => document.body.scrollHeight);
     while (scrollAttempts <= maxScrollAttempts) {

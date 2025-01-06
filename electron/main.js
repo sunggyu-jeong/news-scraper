@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, Notification } = require("electron");
 const path = require("node:path");
 
 app.on("ready", () => {
@@ -7,10 +7,15 @@ app.on("ready", () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
     },
   });
+
   mainWindow.webContents.openDevTools();
   mainWindow.loadURL("http://localhost:8080");
+
+  ipcMain.on("show-notification", (event, { title, body }) => {
+    new Notification({ title, body }).show();
+  });
 });
