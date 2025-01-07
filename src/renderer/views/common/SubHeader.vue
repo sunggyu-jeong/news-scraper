@@ -3,28 +3,23 @@
     <div class="header-wrap">
       <button
         class="btn btn-home"
-        @click="navigateToPreviousPage"
-        @keydown.enter="navigateToPreviousPage"
+        @click="navigateToPreviousPage(router)"
+        @keydown.enter="navigateToPreviousPage(router)"
         tabindex="0"
       >
-        <img src="../../assets/img/back_arrow.png" alt="뒤로가기" class="btn btn-back" />
+        <img src="../../assets/img/back_arrow.webp" alt="뒤로가기" class="btn btn-back" />
       </button>
-
       <h1 class="title">{{ props.title }}</h1>
-
-      <!-- <button
-        v-if="btnShow"
-        class="btn btn-right"
-        @click="navigateToSearchPage"
-        @keydown.enter="navigateToSearchPage"
-      /> -->
     </div>
   </header>
 </template>
 
 <script setup>
 import { defineProps } from "vue";
+import { useRouter } from "vue-router";
 import { navigateToPreviousPage } from "../../../shared/utils";
+
+const router = useRouter();
 
 const props = defineProps({
   title: String,
