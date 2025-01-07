@@ -52,7 +52,7 @@ const props = defineProps({
       top: 50%;
       transform: translateY(-50%);
       height: 30px;
-      width: 30px;
+      width: 18px;
       display: flex;
       background: #fff;
       border: none;

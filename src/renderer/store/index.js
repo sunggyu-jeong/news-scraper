@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+// eslint-disable-next-line import/no-cycle
 import axiosInstance from "../config/AxiosInterceptor";
 
 export default createStore({
