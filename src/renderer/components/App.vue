@@ -1,12 +1,19 @@
+<!-- eslint-disable import/extensions -->
 <template>
-  <router-view />
-  <LoadingBar class="loading-bar" :isLoading="isLoading" />
+  <a-locale-provider :locale="locale">
+    <router-view />
+    <LoadingBar class="loading-bar" :isLoading="isLoading" />
+  </a-locale-provider>
 </template>
 
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
 import LoadingBar from "./LoadingBar.vue";
+
+dayjs.locale("ko");
 
 export default {
   components: {

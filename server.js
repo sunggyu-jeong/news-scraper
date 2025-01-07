@@ -17,6 +17,10 @@ const app = express()
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrc: ["'self'", "'unsafe-inline'"],
           connectSrc: ["'self'", "ws://192.168.0.33:8080"],
+          imgSrc: ["'self'", "data:", "https:"],
+          fontSrc: ["'self'", "fonts.googleapis.com"],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'none'"],
         },
       },
     })
