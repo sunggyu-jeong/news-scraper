@@ -7,7 +7,7 @@
         @keydown.enter="navigateToPreviousPage(router)"
         tabindex="0"
       >
-        <img src="../../assets/img/back_arrow.webp" alt="뒤로가기" class="btn btn-back" />
+        <img src="../../assets/img/back.png" alt="뒤로가기" class="btn btn-back" />
       </button>
       <h1 class="title">{{ props.title }}</h1>
     </div>
@@ -45,6 +45,7 @@ const props = defineProps({
     height: 100%;
     display: flex;
     align-items: center;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 
     .btn {
       position: absolute;
