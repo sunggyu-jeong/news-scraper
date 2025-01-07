@@ -27,7 +27,11 @@
       </section>
     </div>
     <div className="date-picker">
-      <a-range-picker v-model:value="value1" :disabled-date="disabledDate" />
+      <a-range-picker
+        v-model:value="selectedPicker"
+        :disabled-date="disabledDate"
+        :allowClear="false"
+      />
     </div>
     <div class="pre-search-form">
       <button class="pre-search-list" @click="test">검색정보 설정</button>
@@ -53,6 +57,8 @@ const news = computed(() => store.state.news);
 const router = useRouter();
 // 검색어가 입력됨을 감지하고, 검색어가 입력되면 초기화 버튼을 생성합니다.
 const showDeleteButton = computed(() => !isEmpty(searchQuery.value));
+// 선택한 기간의 시작일과 종료일을 저장하는 변수
+const selectedPicker = ref([dayjs(), dayjs()]);
 
 /**
  * 검색어를 입력하고 엔터를 누르면 검색을 수행합니다.
@@ -61,11 +67,10 @@ const showDeleteButton = computed(() => !isEmpty(searchQuery.value));
  */
 const handleSearch = async () => {
   try {
-    store.dispatch("toggleLoading", true);
     await store.dispatch("fetchNews", {
       query: searchQuery.value,
-      startDate: "2024.12.01",
-      endDate: "2024.12.31",
+      startDate: dayjs(selectedPicker.value[0]).format("YYYY-MM-DD"),
+      endDate: dayjs(selectedPicker.value[1]).format("YYYY-MM-DD"),
     });
     // Electron에서만 동작합니다.
     if (!isEmpty(window?.electron?.ipcRenderer)) {
@@ -76,8 +81,6 @@ const handleSearch = async () => {
     }
   } catch (error) {
     console.log(error);
-  } finally {
-    store.dispatch("toggleLoading", false);
   }
 };
 
@@ -103,7 +106,13 @@ watch(news, (newValue) => {
     return;
   }
   // 검색 결과가 있으면 "/result" 경로로 이동합니다.
-  router.push("/results");
+  router.push({
+    path: "/results",
+    query: {
+      startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+      endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
+    },
+  });
 });
 </script>
 
@@ -115,7 +124,7 @@ watch(news, (newValue) => {
   height: 100%;
   .logo {
     margin: 0;
-    width: 40%;
+    width: 306px;
     margin-top: 300px;
     align-self: center;
   }
@@ -170,6 +179,14 @@ watch(news, (newValue) => {
   }
   .date-picker {
     margin-top: 16px;
+    .ant-picker {
+      border: none;
+
+      .ant-picker-suffix {
+        background-color: green;
+        display: none;
+      }
+    }
   }
   .pre-search-form {
     display: flex;
