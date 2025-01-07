@@ -1,5 +1,5 @@
-import axios from "axios";
 import { createStore } from "vuex";
+import axiosInstance from "../config/AxiosInterceptor";
 
 export default createStore({
   // 어플리케이션 상태 저장소
@@ -25,7 +25,7 @@ export default createStore({
   actions: {
     async fetchNews({ commit }, { query, startDate, endDate }) {
       try {
-        const repsonse = await axios.get("http://localhost:3000/api/news", {
+        const repsonse = await axiosInstance.get("/api/news", {
           params: {
             query,
             startDate,
