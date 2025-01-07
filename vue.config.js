@@ -20,6 +20,7 @@ module.exports = defineConfig({
         net: false,
         child_process: false,
       },
+      extensions: ["*", ".js", ".vue", ".json"],
     },
     plugins: [
       new webpack.ProvidePlugin({

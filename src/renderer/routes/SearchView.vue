@@ -2,7 +2,7 @@
 <template>
   <context-holder />
   <div class="search">
-    <h1 class="title">이 페이지는 검색 페이지입니다.</h1>
+    <img src="../assets/img/logo.png" alt="로고" class="logo" />
     <div class="search-form">
       <svg
         class="search-icon"
@@ -26,6 +26,9 @@
         <button class="delete-button" @click="clearSearchResults">X</button>
       </section>
     </div>
+    <div className="date-picker">
+      <a-range-picker v-model:value="value1" :disabled-date="disabledDate" />
+    </div>
     <div class="pre-search-form">
       <button class="pre-search-list" @click="test">검색정보 설정</button>
     </div>
@@ -38,6 +41,7 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { message } from "ant-design-vue";
+import dayjs from "dayjs";
 
 // 검색어를 저장하는 변수
 const searchQuery = ref("");
@@ -84,9 +88,12 @@ const clearSearchResults = () => {
   searchQuery.value = "";
 };
 
-const test = () => {
-  router.push("/results");
-};
+/**
+ * 비활성화 할 날짜를 설정합니다.
+ *
+ * @param current 현재 날짜
+ */
+const disabledDate = (current) => current && current > dayjs().endOf("day");
 
 watch(news, (newValue) => {
   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", newValue);
@@ -106,10 +113,11 @@ watch(news, (newValue) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  .title {
+  .logo {
     margin: 0;
-    width: 100%;
+    width: 40%;
     margin-top: 300px;
+    align-self: center;
   }
   .search-form {
     display: flex;
@@ -159,6 +167,9 @@ watch(news, (newValue) => {
         margin-right: 8px;
       }
     }
+  }
+  .date-picker {
+    margin-top: 16px;
   }
   .pre-search-form {
     display: flex;

@@ -77,13 +77,16 @@ export const waitForTimeout = (timeout) =>
  *
  * @example
  * goBack(): 직전화면 이동, goBack(-2): 2단계 전 화면 이동
+ *
+ * @caution
+ * 반드시 라우터를 사용하는 곳에서 주입한 후에 사용할 것
  */
-export const navigateToPreviousPage = () => {
-  // let stepValue = step;
-  // // step이 음수가 아니면 기본값 -1을 설정
-  // if (typeof step !== "number" || step >= 0) {
-  //   stepValue = -1;
-  // }
-  // // $router.go()에 step 값으로 이동
-  // $router.go(stepValue);
+export const navigateToPreviousPage = (router, step = -1) => {
+  let stepValue = step;
+  // step이 음수가 아니면 기본값 -1을 설정
+  if (typeof step !== "number" || step >= 0) {
+    stepValue = -1;
+  }
+  // $router.go()에 step 값으로 이동
+  router.go(stepValue);
 };

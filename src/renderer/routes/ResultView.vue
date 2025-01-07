@@ -1,7 +1,7 @@
 <template>
   <SubHeader />
   <div class="result-content-view">결과</div>
-  <a-table class="result-table-view" :columns="columns" :data-source="news" :pagination="disabled">
+  <a-table class="result-table-view" :columns="columns" :data-source="news" :pagination="false">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'name'">
         <a>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, h } from "vue";
 import { useStore } from "vuex";
 import SubHeader from "../views/common/SubHeader.vue";
 // 뉴스타입,검색어,언론사,타이틀,링크
@@ -62,7 +62,7 @@ const columns = [
     title: "언론사",
     dataIndex: "source",
     key: "source",
-    width: 150,
+    width: 180,
   },
   {
     title: "타이틀",
@@ -74,6 +74,7 @@ const columns = [
     title: "링크",
     key: "link",
     dataIndex: "link",
+    render: (text) => h("a", { href: text, target: "_blank" }, text),
   },
 ];
 
