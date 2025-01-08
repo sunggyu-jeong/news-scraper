@@ -24,11 +24,11 @@ export default createStore({
   },
   // 작업을 수행하며 작업이 완료되면 mutations을 호출하여 상태를 변경하는 함수
   actions: {
-    async fetchNews({ commit }, { query, startDate, endDate }) {
+    async fetchNews({ commit }, { queries, startDate, endDate }) {
       try {
         const repsonse = await axiosInstance.get("/api/news", {
           params: {
-            query,
+            queries,
             startDate,
             endDate,
           },
@@ -36,6 +36,9 @@ export default createStore({
         commit("setNews", repsonse.data.data);
       } catch (error) {
         console.error(error);
+        throw new Error(error.response.data.message || "데이터를 가져오는데 실패했습니다.");
+      } finally {
+        commit("setLoading", false);
       }
     },
     toggleLoading({ commit }, isLoading) {

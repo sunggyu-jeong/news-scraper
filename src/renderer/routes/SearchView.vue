@@ -68,9 +68,9 @@ const selectedPicker = ref([dayjs(), dayjs()]);
 const handleSearch = async () => {
   try {
     await store.dispatch("fetchNews", {
-      query: searchQuery.value,
-      startDate: dayjs(selectedPicker.value[0]).format("YYYY-MM-DD"),
-      endDate: dayjs(selectedPicker.value[1]).format("YYYY-MM-DD"),
+      queries: searchQuery.value,
+      startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+      endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
     });
     // Electron에서만 동작합니다.
     if (!isEmpty(window?.electron?.ipcRenderer)) {
@@ -81,6 +81,7 @@ const handleSearch = async () => {
     }
   } catch (error) {
     console.log(error);
+    message.error(error);
   }
 };
 
@@ -125,7 +126,7 @@ watch(news, (newValue) => {
   .logo {
     margin: 0;
     width: 306px;
-    margin-top: 300px;
+    margin-top: max(15%, 150px);
     align-self: center;
   }
   .search-form {
