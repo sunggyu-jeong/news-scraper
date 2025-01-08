@@ -128,6 +128,7 @@ watch(news, (newValue) => {
     width: 306px;
     margin-top: max(15%, 150px);
     align-self: center;
+    filter: opacity(0.5) drop-shadow(0 0 0 #0a3d62);
   }
   .search-form {
     display: flex;

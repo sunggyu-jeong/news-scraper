@@ -15,6 +15,7 @@ module.exports = {
     "object-curly-newline": "off",
     "newline-per-chained-call": "off",
     "no-unused-vars": "warn",
+    "no-param-reassign": "off",
   },
   overrides: [
     {

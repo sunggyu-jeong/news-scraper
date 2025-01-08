@@ -90,3 +90,5 @@ export const navigateToPreviousPage = (router, step = -1) => {
   // $router.go()에 step 값으로 이동
   router.go(stepValue);
 };
+
+export const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

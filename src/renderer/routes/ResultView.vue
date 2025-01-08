@@ -35,9 +35,10 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import * as XLSX from "xlsx-js-style";
 import dayjs from "dayjs";
+import { isEmpty } from "@/shared/utils";
 import SubHeader from "../views/common/SubHeader.vue";
 
 // Vue Router를 가져옵니다.
@@ -50,6 +51,8 @@ const store = useStore();
 const news = computed(() => store.state.news);
 // isMobile: true일 경우 모바일, false일 경우 PC
 const isMobile = ref(false);
+// Vue Router를 가져옵니다.
+const router = useRouter();
 // 뉴스타입,검색어,언론사,타이틀,링크
 const columns = [
   {
@@ -63,7 +66,7 @@ const columns = [
     title: "검색어",
     dataIndex: "keyword",
     key: "keyword",
-    width: 100,
+    width: 120,
     align: "center",
   },
   {
@@ -89,25 +92,122 @@ const columns = [
  * 접속된 플랫폼이 모바일인지 확인합니다.
  */
 const checkIfMobile = () => {
-  console.log("window.innerWidth:", window.innerWidth);
   isMobile.value = window.innerWidth <= 768;
 };
 
-onMounted(() => {
-  checkIfMobile();
-
-  window.addEventListener("resize", checkIfMobile);
-  console.log(news.value, "페이지 로드 완료");
-  console.log(startDate, "시작일", endDate, "��료일");
-});
+/**
+ * 뉴스 결과에 따라 특정 셀에 사용자 정의 스타일을 적용합니다.
+ *
+ * @param {Object} ws - 스타일이 적용될 워크시트 객체입니다.
+ */
+const applyCustomStyles = (ws) => {
+  news.value.forEach((result, index) => {
+    const keywordCell = ws[`G${10 + index}`];
+    const titleCell = ws[`I${10 + index}`];
+    if (titleCell && keywordCell && result.title.includes(keywordCell.v)) {
+      titleCell.s = {
+        font: { name: "맑은 고딕", sz: 12, color: { rgb: "FF0000" } },
+      };
+    }
+  });
+};
 
 /**
- * 엑셀 다운로드 요청
+ * 주어진 워크시트에 사용자 정의 스타일을 적용합니다.
+ *
+ * @param {Object} ws - 스타일을 적용할 워크시트 객체.
+ *
+ * 이 함수는 다음과 같은 스타일링 작업을 수행합니다:
+ * 1. 모든 셀의 기본 글꼴을 "맑은 고딕", 크기 12, 굵게 하지 않음, 검정색으로 설정합니다.
+ * 2. 특정 헤더 셀(B9, F9, G9, H9, I9, J9)을 굵은 글꼴, 파란색, 연한 파란색 배경, 가운데 정렬로 스타일링합니다.
+ * 3. 9번째 행의 높이를 30 픽셀로 설정합니다.
+ * 4. 특정 셀(F1, F2)을 굵은 글꼴, 파란색, 연한 파란색 배경으로 스타일링합니다.
+ * 5. 특정 셀(G1, G2)을 수평 및 수직으로 가운데 정렬합니다.
+ * 6. 워크시트의 열 너비를 설정합니다.
+ *
+ * @example
+ * const worksheet = {}; // 유효한 워크시트 객체라고 가정합니다.
+ * styleSheet(worksheet);
  */
-const exportToExcel = () => {
+const styleSheet = (ws) => {
+  Object.keys(ws).forEach((cellAddress) => {
+    if (!cellAddress.startsWith("!")) {
+      if (!ws[cellAddress].s) ws[cellAddress].s = {};
+      ws[cellAddress].s.font = {
+        name: "맑은 고딕",
+        sz: 12,
+        bold: false,
+        color: { rgb: "000000" },
+      };
+    }
+  });
+
+  const headerRowIndex = 9;
+  const headerCells = ["B", "F", "G", "H", "I", "J"];
+
+  headerCells.forEach((col) => {
+    const cell = ws[`${col}${headerRowIndex}`];
+    if (cell) {
+      cell.s = {
+        font: { name: "맑은 고딕", bold: true, sz: 12, color: { rgb: "0A3D62" } },
+        fill: {
+          patternType: "solid",
+          fgColor: { rgb: "D6E6F5" },
+        },
+        alignment: { horizontal: "center", vertical: "center" },
+      };
+    }
+  });
+
+  ws["!rows"] = [];
+  ws["!rows"][8] = { hpx: 30 };
+
+  const boldCells = ["F1", "F2"];
+  boldCells.forEach((cellAddress) => {
+    if (ws[cellAddress]) {
+      ws[cellAddress].s = {
+        font: { name: "맑은 고딕", bold: true, sz: 12, color: { rgb: "0A3D62" } },
+        fill: {
+          patternType: "solid",
+          fgColor: { rgb: "D6E6F5" },
+        },
+      };
+    }
+  });
+
+  const centerAlignedCells = ["G1", "G2"];
+  centerAlignedCells.forEach((cellAddress) => {
+    if (ws[cellAddress]) {
+      ws[cellAddress].s = {
+        alignment: { horizontal: "center", vertical: "center" },
+      };
+    }
+  });
+
+  ws["!cols"] = [
+    { wch: 10 },
+    { wch: 25 },
+    { wch: 10 },
+    { wch: 10 },
+    { wch: 10 },
+    { wch: 15 },
+    { wch: 20 },
+    { wch: 30 },
+    { wch: 80 },
+    { wch: 150 },
+  ];
+
+  applyCustomStyles(ws);
+};
+
+/**
+ * 주어진 news results를 XLSX로 변환합니다.
+ *
+ * @returns {Object} XLSX workbook - XLSX workbook object
+ */
+const createSheetWithData = () => {
   const uniqueKeywords = [...new Set(news.value.map((result) => result.keyword))];
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(
+  return XLSX.utils.json_to_sheet(
     [
       ["", "", "", "", "", "갯수", news.value.length],
       ["", "", "", "", "", "조회기간", `${startDate} ~ ${endDate}`],
@@ -133,20 +233,30 @@ const exportToExcel = () => {
     ],
     { skipHeader: true }
   );
+};
 
-  // news.value.forEach((result, index) => {
-  //   const keyword = ws[`G${9 + index}`];
-  //   const cell = ws[`I${9 + index}`];
-  //   if (result.title.includes(keyword?.v)) {
-  //     cell.s = { font: { color: { rgb: "FF0000" }, bold: true } };
-  //   } else {
-  //     cell.s = { font: { color: { rgb: "000000" } } };
-  //   }
-  // });
-
+/**
+ * 엑셀 다운로드 요청
+ */
+const exportToExcel = () => {
+  const wb = XLSX.utils.book_new();
+  const ws = createSheetWithData();
+  styleSheet(ws);
   XLSX.utils.book_append_sheet(wb, ws, "news");
   XLSX.writeFile(wb, `search_result_${dayjs().format("YYYY-MM-DD_HHmmss")}.xlsx`);
 };
+
+onMounted(() => {
+  checkIfMobile();
+
+  window.addEventListener("resize", checkIfMobile);
+  console.log(news.value, "페이지 로드 완료");
+  console.log(startDate, "시작일", endDate, "��료일");
+
+  if (isEmpty(news.value)) {
+    router.replace("/");
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -238,7 +348,7 @@ const exportToExcel = () => {
   .arrow {
     width: 15px;
     height: 23px;
-    filter: opacity(0.5) drop-shadow(0 0 0 #228b22);
+    filter: opacity(0.5) drop-shadow(0 0 0 #0a3d62);
   }
 }
 
