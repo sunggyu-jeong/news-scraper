@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation */
+import $router from "@/renderer/router/index";
 import axios from "axios";
 // eslint-disable-next-line import/no-cycle
 import store from "../store/index";
@@ -5,6 +7,7 @@ import store from "../store/index";
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3001",
   timeout: 500000,
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
@@ -23,9 +26,31 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     store.dispatch("toggleLoading", false);
-    return response;
+    return response.data;
   },
-  (error) => {
+  async (error) => {
+    // 엑세스 토큰이 없거나 만료된 경우, 리프래시 요청
+    if (error.response.data.status === 403) {
+      try {
+        const response = await axiosInstance.post("/api/user/refresh");
+        axiosInstance.defaults.headers["Authorization"] = `Bearer ${response.data.accessToken}`;
+        const { config } = error;
+        config.headers["Authorization"] = `Bearer ${response.data.accessToken}`;
+        const baseResponse = await axiosInstance.request(config);
+        return baseResponse;
+      } catch (refreshError) {
+        store.dispatch("setIsLogin", false);
+        $router.replace("/login");
+        store.dispatch("toggleLoading", false);
+        return Promise.reject(refreshError);
+      }
+    }
+    // 리프래시 토큰이 없거나 만료된 경우, 로그아웃 처리
+    if (error.response.data.status === 409) {
+      $router.replace("/login");
+      store.dispatch("toggleLoading", false);
+      return Promise.reject(error);
+    }
     console.log("API 에러:", error.response);
     // 응답 에러 발생 시 로딩 종료
     store.dispatch("toggleLoading", false);

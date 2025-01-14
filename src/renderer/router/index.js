@@ -5,10 +5,16 @@ import { createRouter, createWebHistory } from "vue-router";
 import SearchView from "../views/components/SearchView.vue";
 import ResultView from "../views/components/ResultView.vue";
 import ErrorView from "../views/components/ErrorView.vue";
+import LoginView from "../views/components/LoginView.vue";
 
 const routes = [
   {
-    path: "/",
+    path: "/login",
+    name: "login",
+    component: LoginView,
+  },
+  {
+    path: "/search",
     name: "search",
     component: SearchView,
   },
@@ -29,14 +35,13 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const store = useStore();
-//   const news = computed(() => store.getters.getNews);
-//   if (to.path === "/results" && isEmpty(news?.value)) {
-//     next({ name: "error", query: { message: "403" } });
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  if (to.fullPath === "/" && localStorage.getItem("token")) {
+    next("/search");
+  } else if (to.fullPath === "/") {
+    next("/login");
+  }
+  next();
+});
 
 export default router;

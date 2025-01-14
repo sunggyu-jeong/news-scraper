@@ -185,7 +185,6 @@ watch(news, (newValue) => {
       border: none;
 
       .ant-picker-suffix {
-        background-color: green;
         display: none;
       }
     }

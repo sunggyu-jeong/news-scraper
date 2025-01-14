@@ -12,8 +12,7 @@
     "build:linux64": "electron-builder --linux --x64",
     "build:win": "npm run build:win32 && npm run build:win64",
     "build:win32": "electron-builder --win --ia32",
-    "build:win64": "electron-builder --win --x64",
-    "server": "concurrently \"npm run serve\" \"node server.js\""
+    "build:win64": "electron-builder --win --x64"
   },
   "build": {
     "productName": "NewsScraper",
@@ -69,12 +68,9 @@
     "cheerio": "^1.0.0",
     "concurrently": "^9.1.2",
     "core-js": "^3.8.3",
-    "cors": "^2.8.5",
     "crypto-browserify": "^3.12.1",
     "dayjs": "^1.11.13",
     "electron": "^33.2.1",
-    "helmet": "^8.0.0",
-    "helmet-csp": "^4.0.0",
     "node-notifier": "^10.0.1",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "os-browserify": "^0.3.0",
