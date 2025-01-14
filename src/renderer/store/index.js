@@ -1,5 +1,4 @@
 import { createStore } from "vuex";
-import axios from "axios";
 // eslint-disable-next-line import/no-cycle
 import axiosInstance from "../config/AxiosInterceptor";
 
@@ -10,6 +9,7 @@ export default createStore({
     isLogin: null,
     isLoading: false,
     checkAuth: false,
+    errorMessage: null,
   },
   // vuex 스토어 상태 값에 접근하는 함수
   getters: {
@@ -17,6 +17,7 @@ export default createStore({
     getLoading: (state) => state.isLoading,
     getCheckAuth: (state) => state.checkAuth,
     getIsLogin: (state) => state.isLogin,
+    getErrorMessage: (state) => state.errorMessage,
   },
   // vuex 스토어 상태값을 갱신하는 함수
   mutations: {
@@ -61,8 +62,9 @@ export default createStore({
         commit("setIsLogin", true);
       } catch (error) {
         commit("setIsLogin", false);
+        commit("setLoading", false);
         console.error(error);
-        throw new Error(error.response.data.message || "로그인 요청이 실패했습니다.");
+        throw new Error(error?.response?.data?.message || "로그인 요청이 실패했습니다.");
       }
     },
     async getCheckAuth({ commit }) {

@@ -1,9 +1,9 @@
 <!-- eslint-disable import/extensions -->
 <template>
-  <a-locale-provider :locale="locale">
+  <a-config-provider :locale="locale">
     <router-view />
     <LoadingBar class="loading-bar" :isLoading="isLoading" />
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 
 <script>
