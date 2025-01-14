@@ -7,12 +7,13 @@
         <a-input class="id" v-model:value="userId" placeholder="아이디를 입력하세요." allow-clear />
       </div>
       <div class="password-form">
-        <span class="password-text">비밀번호</span>
+        <button tabindex="-1" class="password-text" @click="handleMoveMasterView">비밀번호</button>
         <a-input-password
           class="password"
           v-model:value="password"
           placeholder="비밀번호를 입력하세요."
           allow-clear
+          @keyup.enter="handleLogin"
         />
       </div>
       <a-button type="primary" :loading="loading" class="login-button" @click="handleLogin"
@@ -26,6 +27,8 @@
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { isEmpty } from "@/shared/utils";
+import { message } from "ant-design-vue";
 
 // 아이디 입력값
 const userId = ref("");
@@ -39,11 +42,31 @@ const store = useStore();
 const router = useRouter();
 // 로그인 요청이 완료됨을 감지합니다.
 const isLogin = computed(() => store.state.isLogin);
+// 마스터 관리자 로그인 화면으로 이동하기 위한 변수
+let count = 0;
+
+/**
+ * 마스터 권한 화면 이동
+ *
+ * 조건 : 유저ID: admin, 비밀번호 텍스트 버튼 5회이상 클릭 시
+ */
+const handleMoveMasterView = () => {
+  if (count > 5 && userId.value === "admin") {
+    router.push("/master/login");
+    count = 0;
+  } else {
+    count += 1;
+  }
+};
 
 /**
  * 로그인 요청
  */
 const handleLogin = () => {
+  if (isEmpty(userId.value) || isEmpty(password.value)) {
+    message.warn(`${isEmpty(userId.value) ? "아이디" : "비밀번호"}를 입력 해 주세요.`);
+    return;
+  }
   loading.value = true;
   store.dispatch("login", { userId: userId.value, password: password.value });
 };
@@ -53,9 +76,10 @@ watch(
   (newValue) => {
     if (newValue) {
       router.push("/search");
+    } else if (newValue === false) {
+      store.commit("setIsLogin", null);
+      loading.value = false;
     }
-    store.commit("setIsLogin", null);
-    loading.value = false;
   }
 );
 </script>
@@ -92,7 +116,7 @@ watch(
       width: 80%;
       .id-text {
         font-size: 13px;
-        align-items: start;
+        font-weight: bold;
       }
     }
 
@@ -104,7 +128,11 @@ watch(
       width: 80%;
       .password-text {
         font-size: 13px;
-        align-items: start;
+        font-weight: bold;
+        background: none;
+        border: none;
+        padding: 0;
+        color: #2c3250;
       }
     }
 
