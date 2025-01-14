@@ -16,7 +16,7 @@
           <span class="source">{{ item.source }}</span>
         </div>
         <a :href="item.link" target="_blank" class="link">
-          <img src="../assets/img/forward.png" alt="arrow" class="arrow" />
+          <img src="../../assets/img/forward.png" alt="arrow" class="arrow" />
         </a>
       </a-space>
     </div>
@@ -39,7 +39,7 @@ import { useRoute, useRouter } from "vue-router";
 import * as XLSX from "xlsx-js-style";
 import dayjs from "dayjs";
 import { isEmpty } from "@/shared/utils";
-import SubHeader from "../views/common/SubHeader.vue";
+import SubHeader from "../common/SubHeader.vue";
 
 // Vue Router를 가져옵니다.
 const route = useRoute();

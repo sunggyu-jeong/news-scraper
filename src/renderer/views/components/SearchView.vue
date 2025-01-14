@@ -2,7 +2,7 @@
 <template>
   <context-holder />
   <div class="search">
-    <img src="../assets/img/logo.png" alt="로고" class="logo" />
+    <img src="../../assets/img/logo.png" alt="로고" class="logo" />
     <div class="search-form">
       <svg
         class="search-icon"

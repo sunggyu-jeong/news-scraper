@@ -73,7 +73,6 @@
     "crypto-browserify": "^3.12.1",
     "dayjs": "^1.11.13",
     "electron": "^33.2.1",
-    "express": "^4.21.2",
     "helmet": "^8.0.0",
     "helmet-csp": "^4.0.0",
     "node-notifier": "^10.0.1",

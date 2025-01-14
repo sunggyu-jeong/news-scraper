@@ -20,9 +20,18 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-axiosInstance.interceptors.response.use((response) => {
-  store.dispatch("toggleLoading", false);
-  return response;
-});
+axiosInstance.interceptors.response.use(
+  (response) => {
+    store.dispatch("toggleLoading", false);
+    return response;
+  },
+  (error) => {
+    console.log("API 에러:", error.response);
+    // 응답 에러 발생 시 로딩 종료
+    store.dispatch("toggleLoading", false);
+    console.error("응답 에러:", error);
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;
