@@ -4,9 +4,13 @@ import App from "./renderer/components/App.vue";
 import router from "./renderer/router";
 import store from "./renderer/store";
 import "vue-loading-overlay/dist/css/index.css";
+import axiosInstance, { setStore } from "./renderer/config/AxiosInterceptor";
 
-// Vue 애플리케이션 생성
-createApp(App)
+const app = createApp(App);
+setStore(store);
+
+app.config.globalProperties.$axios = axiosInstance;
+app
   .use(store) // Vuex Store 사용
   .use(router) // Vue Router 사용
   .use(Antd) // Ant Design Vue 사용
