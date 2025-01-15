@@ -4,7 +4,13 @@
       <h2 class="login-title">로그인</h2>
       <div class="id-form">
         <span class="id-text">아이디</span>
-        <a-input class="id" v-model:value="userId" placeholder="아이디를 입력하세요." allow-clear />
+        <a-input
+          class="id"
+          v-model:value="userId"
+          placeholder="아이디를 입력하세요."
+          allow-clear
+          @keyup.enter="handleLogin"
+        />
       </div>
       <div class="password-form">
         <button tabindex="-1" class="password-text" @click="handleMoveMasterView">비밀번호</button>
@@ -41,7 +47,7 @@ const store = useStore();
 // Vue Router
 const router = useRouter();
 // 로그인 요청이 완료됨을 감지합니다.
-const isLogin = computed(() => store.state.isLogin);
+const isLogin = computed(() => store.state.auth.isLogin);
 // 마스터 관리자 로그인 화면으로 이동하기 위한 변수
 let count = 0;
 
@@ -68,16 +74,16 @@ const handleLogin = () => {
     return;
   }
   loading.value = true;
-  store.dispatch("login", { userId: userId.value, password: password.value });
+  store.dispatch("auth/login", { userId: userId.value, password: password.value });
 };
 
 watch(
   () => isLogin.value,
   (newValue) => {
     if (newValue) {
-      router.push("/search");
+      router.replace("/search/keywords");
     } else if (newValue === false) {
-      store.commit("setIsLogin", null);
+      store.commit("auth/setIsLogin", null);
       loading.value = false;
     }
   }

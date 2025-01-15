@@ -1,10 +1,19 @@
 <template>
   <SubHeader title="키워드" />
   <div class="delete-content">
-    <button class="delete-button" @click="handleDelete">선택 항목 삭제</button>
+    <a-popconfirm
+      title="선택하신 검색어를 삭제하시겠습니까?"
+      ok-text="예"
+      cancel-text="아니오"
+      @confirm="confirm"
+    >
+      <a-button class="delete-button">선택 삭제</a-button>
+    </a-popconfirm>
   </div>
   <div class="keyword">
+    <a-skeleton v-if="isLoading" :active="true" :row="10" :title="false" :paragraph="{ rows: 3 }" />
     <a-table
+      v-else
       class="keyword-content"
       :row-selection="rowSelection"
       :columns="columns"
@@ -13,22 +22,16 @@
     />
   </div>
   <!-- <a-float-button :badge="{ count: 123, overflowCount: 999 }"> -->
-  <a-popconfirm
-    title="정말 이 작업을 삭제하시겠습니까?"
-    ok-text="예"
-    cancel-text="아니오"
-    @confirm="confirm"
-  >
-    <a-button>삭제</a-button>
-  </a-popconfirm>
+
   <!-- </a-float-button> -->
 </template>
 
 <script setup>
 import { computed, ref, unref } from "vue";
 import { Table } from "ant-design-vue";
-import SubHeader from "../common/SubHeader.vue";
+import SubHeader from "../../shared-components/layout/SubHeader.vue";
 
+const isLoading = ref(true);
 const columns = [
   {
     title: "Name",
@@ -108,16 +111,23 @@ const rowSelection = computed(() => {
   margin-top: 50px;
   text-align: end;
   margin-right: 16px;
+  :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn-default:not(:disabled):hover {
+    color: #FAAC14 !important;
+  }
   .delete-button {
+
     background-color: #383d42;
     font-family: sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
-    color: white;
+    color: #FFF;
     border: none;
     border-radius: 5px;
-    padding: 8px 15px;
+    padding: 0px 15px;
     cursor: pointer;
+    :not(:disabled):hover {
+      color: #FAAC14
+    }
   }
 }
 .keyword {

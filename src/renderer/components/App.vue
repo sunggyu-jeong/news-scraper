@@ -7,10 +7,11 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { message } from "ant-design-vue";
 import LoadingBar from "./LoadingBar.vue";
 
 dayjs.locale("ko");
@@ -21,7 +22,15 @@ export default {
   },
   setup() {
     const store = useStore();
-    const isLoading = computed(() => store.state.isLoading);
+    const isLoading = computed(() => store.state.loading.isLoading);
+    const errorMessage = computed(() => store.state.errorMessage);
+
+    watch(errorMessage, (newErrorMessage) => {
+      if (newErrorMessage) {
+        message.warn(newErrorMessage);
+        store.dispatch("clearErrorMessage");
+      }
+    });
     return {
       isLoading,
     };

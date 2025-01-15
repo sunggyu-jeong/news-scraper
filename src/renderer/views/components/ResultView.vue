@@ -39,7 +39,7 @@ import { useRoute, useRouter } from "vue-router";
 import * as XLSX from "xlsx-js-style";
 import dayjs from "dayjs";
 import { isEmpty } from "@/shared/utils";
-import SubHeader from "../common/SubHeader.vue";
+import SubHeader from "../../shared-components/layout/SubHeader.vue";
 
 // Vue Router를 가져옵니다.
 const route = useRoute();
