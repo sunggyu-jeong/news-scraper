@@ -5,7 +5,6 @@ export default {
   namespaced: true,
   state: {
     isLoading: null,
-    isKeywordDeleted: null,
     keywordList: [],
   },
   getters: {
@@ -16,9 +15,6 @@ export default {
     setIsLoading(state, isLoading) {
       state.isLoading = isLoading;
     },
-    setKeywordDeleted(state, isKeywordDeleted) {
-      state.isKeywordDeleted = isKeywordDeleted;
-    },
     setKeywordList(state, keywordList) {
       state.keywordList = keywordList;
     },
@@ -26,7 +22,7 @@ export default {
   actions: {
     async fetchKeywordList({ commit }) {
       try {
-        commit("setIsKeywordLoading", true);
+        commit("setIsLoading", true);
         const response = await axiosInstance.get("/api/keywords");
         commit(
           "setKeywordList",
@@ -51,7 +47,6 @@ export default {
       }
     },
     async deleteKeywords({ commit }, keywordIdList) {
-      console.log(">>>>>>>>>>>", keywordIdList);
       try {
         await axiosInstance.delete(`/api/keywords`, {
           params: { keywordIds: keywordIdList }, // params에 키워드 배열을 keywordIds로 넣기

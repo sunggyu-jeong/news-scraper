@@ -25,6 +25,7 @@
         :style="{
           right: '24px',
         }"
+        @click="handleVisibleAddModal(true)"
       >
         <template #tooltip>
           <div>키워드 추가하기</div>
@@ -56,12 +57,41 @@
         <p>이 작업은 취소할 수 없습니다.</p>
       </span>
     </a-modal>
+
+    <a-modal
+      v-model:open="openAddModal"
+      title="검색어 추가"
+      ok-text="저장"
+      cancel-text="취소"
+      width="400px"
+    >
+      <span>
+        <a-button
+          class="keyword-button"
+          v-for="(keyword, index) in inputKeywordList"
+          :key="index"
+          @click="onClickRemoveKeyword(index)"
+        >
+          {{ keyword }}
+          <template #icon>
+            <CloseOutlined />
+          </template>
+        </a-button>
+
+        <a-input
+          class="keyword-input"
+          v-model:value="inputKeyword"
+          placeholder="검색어를 입력하세요"
+          @keydown.enter.prevent="handleAddKeyword(e)"
+        />
+      </span>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, unref, watch } from "vue";
-import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons-vue";
+import { PlusCircleOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons-vue";
 import dayjs from "dayjs";
 import { isEmpty } from "@/shared/utils";
 import { message } from "ant-design-vue";
@@ -82,7 +112,12 @@ const selectedKeywordCount = computed(() => {
 });
 // 삭제 모달팝업 표출 여부
 const openDeleteModal = ref(false);
-
+// 등록 모달팝업 표출 여부
+const openAddModal = ref(true);
+// 입력 키워드 목록
+const inputKeywordList = ref([]);
+// 현재 입력한 키워드
+const inputKeyword = ref("");
 // 테이블 컬럼
 const columns = [
   {
@@ -99,13 +134,47 @@ const columns = [
 ];
 
 /**
- * 삭제모달 표출
+ * 키워드 등록
+ */
+const handleAddKeyword = (e) => {
+  console.log(e);
+  if (isEmpty(inputKeyword.value)) {
+    message.warn("검색어를 입력하세요.");
+    return;
+  }
+  console.log(">>>>>>>>>>>>>", inputKeyword.value);
+  inputKeywordList.value.push(inputKeyword.value);
+  inputKeyword.value = "";
+};
+
+/**
+ * 검색어 등록 모달 표출정보 변경
+ *
+ * @param visible 모달 팝업 표시 여부
+ */
+const handleVisibleAddModal = (visible) => {
+  openAddModal.value = visible;
+};
+
+/**
+ * 입력한 검색어 삭제
+ *
+ * @param index 검색어 인덱스
+ */
+const onClickRemoveKeyword = (index) => {
+  console.log(">>>>>>>>>>>>", index);
+  inputKeywordList.value = inputKeywordList.value.filter(
+    (el) => el !== inputKeywordList.value[index]
+  );
+};
+
+/**
+ * 키워드 삭제 모달 표출
  *
  * @param visible 모달 팝업 표시 여부
  *
  */
 const handleVisibleDeleteModal = (visible) => {
-  console.log(">>>>>>>");
   if (isEmpty(selectedRowKeys.value)) {
     message.warn("선택한 키워드가 없습니다.");
     return;
@@ -117,7 +186,6 @@ const handleVisibleDeleteModal = (visible) => {
  * 선택한 키워드 삭제
  */
 const handleDeleteKeywords = async () => {
-  console.log(">>>>>>> deleteKeywords", selectedRowKeys.value);
   const response = await store.dispatch("keyword/deleteKeywords", selectedRowKeys.value);
   if (response) {
     message.success("키워드가 삭제되었습니다.");
@@ -188,6 +256,35 @@ watch(keywordList, (newkeywordList) => {
         font-weight: normal;
       }
     }
+  }
+}
+
+.keyword-button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.keyword-input {
+  width: 100%;
+  margin-bottom: 8px;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  color: #495057;
+  background-color: #f8f9fa;
+  &:focus {
+    outline: none;
+    background-color: #e9ecef;
   }
 }
 </style>

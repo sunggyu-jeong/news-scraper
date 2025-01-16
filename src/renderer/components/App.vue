@@ -23,14 +23,16 @@ export default {
   setup() {
     const store = useStore();
     const isLoading = computed(() => store.state.loading.isLoading);
-    const errorMessage = computed(() => store.state.errorMessage);
 
-    watch(errorMessage, (newErrorMessage) => {
-      if (newErrorMessage) {
-        message.warn(newErrorMessage);
-        store.dispatch("clearErrorMessage");
+    watch(
+      () => store.state.errorMessage,
+      (newErrorMessage) => {
+        if (newErrorMessage) {
+          message.warn(newErrorMessage);
+          store.dispatch("clearErrorMessage");
+        }
       }
-    });
+    );
     return {
       isLoading,
     };
