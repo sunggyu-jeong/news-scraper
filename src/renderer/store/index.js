@@ -1,8 +1,8 @@
 import { createStore } from "vuex";
-// eslint-disable-next-line import/no-cycle
 import auth from "./modules/auth";
 import loading from "./modules/loading";
 import news from "./modules/news";
+import keyword from "./modules/keyword";
 
 export default createStore({
   state: {
@@ -28,5 +28,6 @@ export default createStore({
     auth,
     loading,
     news,
+    keyword,
   },
 });

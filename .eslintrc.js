@@ -16,6 +16,8 @@ module.exports = {
     "newline-per-chained-call": "off",
     "no-unused-vars": "warn",
     "no-param-reassign": "off",
+    "arrow-body-style": ["off"],
+    "operator-linebreak": "off",
   },
   overrides: [
     {
