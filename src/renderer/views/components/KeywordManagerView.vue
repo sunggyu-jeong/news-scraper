@@ -1,6 +1,16 @@
 <template>
-  <SubHeader title="검색 키워드" />
+  <SubHeader title="검색 설정" />
   <div class="keyword">
+    <div class="keyword-date-picker">
+      <h3>검색기간</h3>
+      <div className="date-picker">
+        <a-range-picker
+          v-model:value="selectedPicker"
+          :disabled-date="disabledDate"
+          :allowClear="false"
+        />
+      </div>
+    </div>
     <template v-if="isLoading">
       <a-skeleton
         v-for="n in 5"
@@ -28,7 +38,7 @@
         @click="handleVisibleAddModal(true)"
       >
         <template #tooltip>
-          <div>키워드 추가하기</div>
+          <div>검색어 추가하기</div>
         </template>
         <template #icon> <PlusCircleOutlined /> </template>
       </a-float-button>
@@ -37,7 +47,7 @@
         @click="handleVisibleDeleteModal(true)"
       >
         <template #tooltip>
-          <div>키워드 삭제하기</div>
+          <div>검색어 삭제하기</div>
         </template>
         <template #icon>
           <DeleteOutlined />
@@ -64,6 +74,7 @@
       ok-text="저장"
       cancel-text="취소"
       width="400px"
+      @ok="handlePostKeywords"
     >
       <span>
         <a-button
@@ -82,20 +93,33 @@
           class="keyword-input"
           v-model:value="inputKeyword"
           placeholder="검색어를 입력하세요"
-          @keydown.enter.prevent="handleAddKeyword(e)"
+          @keydown.enter.prevent="handleAddKeyword"
+          maxlength="20"
         />
+        <span class="keyword-input-guide">추가하실 검색어를 입력 한 후에 엔터를 눌러주세요.</span>
       </span>
     </a-modal>
+
+    <a-button class="fixed-bottom-button" type="primary" shape="round" @click="handleSearch">
+      검색
+      <ArrowRightOutlined />
+    </a-button>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, unref, watch } from "vue";
-import { PlusCircleOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons-vue";
+import {
+  PlusCircleOutlined,
+  DeleteOutlined,
+  CloseOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons-vue";
 import dayjs from "dayjs";
 import { isEmpty } from "@/shared/utils";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import SubHeader from "../../shared-components/layout/SubHeader.vue";
 
 // 검색어 정보 조회 로딩여부
@@ -104,24 +128,31 @@ const isLoading = ref(false);
 const selectedRowKeys = ref([]);
 // vuex
 const store = useStore();
-// 키워드 목록
+// 검색어 목록
 const keywordList = computed(() => store.state.keyword.keywordList);
-// 선택한 키워드 갯수
+// 선택한 검색어 갯수
 const selectedKeywordCount = computed(() => {
   return selectedRowKeys.value ? selectedRowKeys.value.length : 0;
 });
 // 삭제 모달팝업 표출 여부
 const openDeleteModal = ref(false);
 // 등록 모달팝업 표출 여부
-const openAddModal = ref(true);
-// 입력 키워드 목록
+const openAddModal = ref(false);
+// 입력 검색어 목록
 const inputKeywordList = ref([]);
-// 현재 입력한 키워드
+// 현재 입력한 검색어
 const inputKeyword = ref("");
+// 선택한 기간의 시작일과 종료일을 저장하는 변수
+const selectedPicker = ref([dayjs(), dayjs()]);
+// Vue Router를 가져옵니다.
+const router = useRouter();
+// 검색된 뉴스 정보
+const newsList = computed(() => store.state.news.newsList);
+
 // 테이블 컬럼
 const columns = [
   {
-    title: "키워드",
+    title: "검색어",
     dataIndex: "keyword",
     key: "keyword",
   },
@@ -132,12 +163,20 @@ const columns = [
     textAlign: "center",
   },
 ];
-
 /**
- * 키워드 등록
+ * 비활성화 할 날짜를 설정합니다.
+ *
+ * @param current 현재 날짜
+ */
+const disabledDate = (current) => current && current > dayjs().endOf("day");
+/**
+ * 검색어 등록
  */
 const handleAddKeyword = (e) => {
-  console.log(e);
+  if (e.isComposing) {
+    console.log(">>> composing");
+    return;
+  }
   if (isEmpty(inputKeyword.value)) {
     message.warn("검색어를 입력하세요.");
     return;
@@ -145,6 +184,22 @@ const handleAddKeyword = (e) => {
   console.log(">>>>>>>>>>>>>", inputKeyword.value);
   inputKeywordList.value.push(inputKeyword.value);
   inputKeyword.value = "";
+};
+
+/**
+ * 입력한 키워드 등록
+ */
+const handlePostKeywords = async () => {
+  if (isEmpty(inputKeywordList.value)) {
+    message.warn("입력된 검색어가 없습니다.");
+    return;
+  }
+  const response = await store.dispatch("keyword/postKeywords", inputKeywordList.value);
+  if (response) {
+    message.success("검색어 등록이 완료되었습니다.");
+    openAddModal.value = false;
+    store.dispatch("keyword/fetchKeywordList");
+  }
 };
 
 /**
@@ -169,26 +224,27 @@ const onClickRemoveKeyword = (index) => {
 };
 
 /**
- * 키워드 삭제 모달 표출
+ * 검색어 삭제 모달 표출
  *
  * @param visible 모달 팝업 표시 여부
  *
  */
 const handleVisibleDeleteModal = (visible) => {
   if (isEmpty(selectedRowKeys.value)) {
-    message.warn("선택한 키워드가 없습니다.");
+    message.warn("선택한 검색어가 없습니다.");
     return;
   }
   openDeleteModal.value = visible;
 };
 
 /**
- * 선택한 키워드 삭제
+ * 선택한 검색어 삭제
  */
 const handleDeleteKeywords = async () => {
   const response = await store.dispatch("keyword/deleteKeywords", selectedRowKeys.value);
   if (response) {
-    message.success("키워드가 삭제되었습니다.");
+    message.success("검색어가 삭제되었습니다.");
+    selectedRowKeys.value = [];
     isLoading.value = true;
     store.dispatch("keyword/fetchKeywordList");
   }
@@ -196,7 +252,7 @@ const handleDeleteKeywords = async () => {
 };
 
 /**
- * 키워드 선택 처리
+ * 검색어 선택 처리
  */
 const onSelectChange = (changableRowKeys) => {
   console.log("selectedRowKeys changed: ", changableRowKeys);
@@ -215,6 +271,19 @@ const rowSelection = computed(() => ({
   columnWidth: 70,
 }));
 
+const handleSearch = async () => {
+  const selectedKey = new Set(selectedRowKeys.value);
+  const searchQuery = keywordList.value
+    .filter((el) => selectedKey.has(el.key))
+    .map((el) => el.keyword)
+    .join(",");
+  await store.dispatch("news/fetchNews", {
+    queries: searchQuery,
+    startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+    endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
+  });
+};
+
 onMounted(() => {
   isLoading.value = true;
   store.dispatch("keyword/fetchKeywordList");
@@ -223,10 +292,30 @@ onMounted(() => {
 watch(keywordList, (newkeywordList) => {
   isLoading.value = false;
   if (!isEmpty(newkeywordList)) {
-    console.log("newKeywords: ", newkeywordList);
-    console.log(dayjs(newkeywordList[0].createdAt).format("YYYY.MM.DD"));
     selectedRowKeys.value = newkeywordList.map((el) => el.key);
   }
+});
+
+watch(openAddModal, (modalStatus) => {
+  if (!modalStatus) {
+    inputKeyword.value = "";
+    inputKeywordList.value = [];
+  }
+});
+
+watch(newsList, (searchNewsList) => {
+  console.log(">>>>>>>");
+  if (isEmpty(searchNewsList.length)) {
+    message.warning("검색된 정보가 없습니다.");
+    return;
+  }
+  router.push({
+    path: "/results",
+    query: {
+      startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+      endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
+    },
+  });
 });
 </script>
 
@@ -273,7 +362,7 @@ watch(keywordList, (newkeywordList) => {
 }
 .keyword-input {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-family: sans-serif;
   font-size: 13px;
   font-weight: bold;
@@ -284,7 +373,50 @@ watch(keywordList, (newkeywordList) => {
   background-color: #f8f9fa;
   &:focus {
     outline: none;
-    background-color: #e9ecef;
+    background-color:  #e9ecef;
   }
+}
+.keyword-date-picker {
+  margin-left: 16px;
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  margin-bottom: 16px;
+  h3 {
+    margin:0px;
+    margin-top: 16px;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .date-picker {
+    margin-top: 16px;
+    .ant-picker {
+      border: none;
+
+      .ant-picker-suffix {
+        display: none;
+      }
+    }
+  }
+}
+.keyword-input-guide {
+  color: #6c757d;
+  font-size: 11px;
+  margin-left: 5px;
+}
+
+.fixed-bottom-button {
+  position: fixed;
+  bottom:20px;
+  left: 50%;
+  height: 40px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
 }
 </style>

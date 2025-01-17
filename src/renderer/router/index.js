@@ -3,7 +3,7 @@ import SearchView from "../views/components/SearchView.vue";
 import ResultView from "../views/components/ResultView.vue";
 import ErrorView from "../shared-components/ErrorView.vue";
 import LoginView from "../views/components/LoginView.vue";
-import SearchKeywordManagerView from "../views/components/SearchKeywordManagerView.vue";
+import SearchKeywordManagerView from "../views/components/KeywordManagerView.vue";
 import MasterView from "../views/components/MasterView.vue";
 
 const routes = [
