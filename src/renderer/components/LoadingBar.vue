@@ -1,6 +1,10 @@
 <template>
   <div class="loading-bar" v-if="isLoading">
-    <div class="spinner"></div>
+    <div class="loading-text">
+      <span class="dot dot-1"></span>
+      <span class="dot dot-2"></span>
+      <span class="dot dot-3"></span>
+    </div>
   </div>
 </template>
 
@@ -34,22 +38,41 @@ export default {
   background: rgba(255, 255, 255, 0.8);
   z-index: 9999;
 
-  .spinner {
-    border: 8px solid rgba(0, 0, 0, 0.1);
-    border-top: 8px solid #33383a;
-    border-radius: 90%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-  }
+  .loading-text {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
+    .dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #33383a;
+      margin: 0 5px;
+      animation: jump 0.6s infinite alternate;
     }
-    100% {
-      transform: rotate(360deg);
+
+    .dot-1 {
+      animation-delay: 0s;
     }
+    .dot-2 {
+      animation-delay: 0.2s;
+    }
+    .dot-3 {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-15px);
   }
 }
 </style>
