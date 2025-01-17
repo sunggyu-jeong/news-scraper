@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     // 엑세스 토큰이 없거나 만료된 경우, 리프래시 요청
-    if (error.response.data.status === 403) {
+    if (error?.response?.data?.status === 403) {
       try {
         const response = await axiosInstance.post("/api/user/refresh");
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${response.data.accessToken}`;
@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
       }
     }
     // 리프래시 토큰이 없거나 만료된 경우, 로그아웃 처리
-    if (error.response.data.status === 409) {
+    if (error?.response?.data?.status === 409) {
       $router.replace("/login");
       store.dispatch("loading/toggleLoading", false);
       return Promise.reject(error);

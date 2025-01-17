@@ -42,8 +42,27 @@ export default {
             root: true,
           }
         );
+        commit("setKeywordList", []);
       } finally {
         commit("setIsLoading", false);
+      }
+    },
+    async postKeywords({ commit }, keywordList) {
+      try {
+        console.log(">>> postKeywords()", keywordList);
+        await axiosInstance.post("/api/keywords", keywordList);
+        return true;
+      } catch (error) {
+        console.error(error);
+        commit(
+          "setErrorMessage",
+          error.response?.data?.message ||
+            "검색어 등록 요청이 실패했습니다. 잠시 후 다시 시도해주세요.",
+          {
+            root: true,
+          }
+        );
+        return false;
       }
     },
     async deleteKeywords({ commit }, keywordIdList) {
