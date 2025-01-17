@@ -5,7 +5,7 @@
     <button @click="exportToExcel">엑셀 다운로드</button>
   </div>
   <div v-if="isMobile" class="card-view">
-    <div v-for="(item, index) in news" :key="index" class="card">
+    <div v-for="(item, index) in newsList" :key="index" class="card">
       <!-- <div class="card-header">
         <h3>{{ item.newsType }}</h3>
         <span>{{ item.keyword }}</span>
@@ -13,7 +13,7 @@
       <a-space class="space" :size="16">
         <div class="card-body">
           <span class="title">{{ item.title }}</span>
-          <span class="source">{{ item.source }}</span>
+          <span class="source">{{ `${item.source} | ${item.keyword}` }}</span>
         </div>
         <a :href="item.link" target="_blank" class="link">
           <img src="../../assets/img/forward.png" alt="arrow" class="arrow" />
@@ -22,7 +22,12 @@
     </div>
   </div>
   <div v-else>
-    <a-table class="result-table-view" :columns="columns" :data-source="news" :pagination="false">
+    <a-table
+      class="result-table-view"
+      :columns="columns"
+      :data-source="newsList"
+      :pagination="false"
+    >
       <template #bodyCell="{ column, text }">
         <template v-if="column.dataIndex === 'link'">
           <a :href="text" target="_blank">{{ text }}</a>
@@ -35,10 +40,9 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import * as XLSX from "xlsx-js-style";
 import dayjs from "dayjs";
-import { isEmpty } from "@/shared/utils";
 import SubHeader from "../../shared-components/layout/SubHeader.vue";
 
 // Vue Router를 가져옵니다.
@@ -48,11 +52,9 @@ const { startDate, endDate } = route?.query || {};
 // Vuex store에서 news state를 가져옵니다.
 const store = useStore();
 // 뉴스 검색 결과를 가져옵니다.
-const news = computed(() => store.state.news);
+const newsList = computed(() => store.state.news.newsList);
 // isMobile: true일 경우 모바일, false일 경우 PC
 const isMobile = ref(false);
-// Vue Router를 가져옵니다.
-const router = useRouter();
 // 뉴스타입,검색어,언론사,타이틀,링크
 const columns = [
   {
@@ -101,7 +103,7 @@ const checkIfMobile = () => {
  * @param {Object} ws - 스타일이 적용될 워크시트 객체입니다.
  */
 const applyCustomStyles = (ws) => {
-  news.value.forEach((result, index) => {
+  newsList.value.forEach((result, index) => {
     const keywordCell = ws[`G${10 + index}`];
     const titleCell = ws[`I${10 + index}`];
     if (titleCell && keywordCell && result.title.includes(keywordCell.v)) {
@@ -130,6 +132,7 @@ const applyCustomStyles = (ws) => {
  * styleSheet(worksheet);
  */
 const styleSheet = (ws) => {
+  // 전체 셀 폰트 설정
   Object.keys(ws).forEach((cellAddress) => {
     if (!cellAddress.startsWith("!")) {
       if (!ws[cellAddress].s) ws[cellAddress].s = {};
@@ -145,6 +148,7 @@ const styleSheet = (ws) => {
   const headerRowIndex = 9;
   const headerCells = ["B", "F", "G", "H", "I", "J"];
 
+  // 헤더 셀 스타일 설정
   headerCells.forEach((col) => {
     const cell = ws[`${col}${headerRowIndex}`];
     if (cell) {
@@ -162,6 +166,7 @@ const styleSheet = (ws) => {
   ws["!rows"] = [];
   ws["!rows"][8] = { hpx: 30 };
 
+  // 볼드처리하는 셀 설정
   const boldCells = ["F1", "F2"];
   boldCells.forEach((cellAddress) => {
     if (ws[cellAddress]) {
@@ -175,6 +180,7 @@ const styleSheet = (ws) => {
     }
   });
 
+  // 가운데정렬이 필요한 셀 설정
   const centerAlignedCells = ["G1", "G2"];
   centerAlignedCells.forEach((cellAddress) => {
     if (ws[cellAddress]) {
@@ -206,10 +212,10 @@ const styleSheet = (ws) => {
  * @returns {Object} XLSX workbook - XLSX workbook object
  */
 const createSheetWithData = () => {
-  const uniqueKeywords = [...new Set(news.value.map((result) => result.keyword))];
+  const uniqueKeywords = [...new Set(newsList.value.map((result) => result.keyword))];
   return XLSX.utils.json_to_sheet(
     [
-      ["", "", "", "", "", "갯수", news.value.length],
+      ["", "", "", "", "", "갯수", newsList.value.length],
       ["", "", "", "", "", "조회기간", `${startDate} ~ ${endDate}`],
       [],
       [],
@@ -218,7 +224,7 @@ const createSheetWithData = () => {
       [],
       [],
       ["", "검색어", "", "", "", "뉴스타입", "검색어", "언론사", "타이틀", "링크"],
-      ...news.value.map((result, index) => [
+      ...newsList.value.map((result, index) => [
         "",
         uniqueKeywords.length > index ? uniqueKeywords[index] : "",
         "",
@@ -250,12 +256,7 @@ onMounted(() => {
   checkIfMobile();
 
   window.addEventListener("resize", checkIfMobile);
-  console.log(news.value, "페이지 로드 완료");
-  console.log(startDate, "시작일", endDate, "��료일");
-
-  if (isEmpty(news.value)) {
-    router.replace("/");
-  }
+  console.log(newsList.value, "페이지 로드 완료");
 });
 </script>
 
