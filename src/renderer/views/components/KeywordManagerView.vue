@@ -120,6 +120,7 @@ import { isEmpty } from "@/shared/utils";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useNews from "@/renderer/composables/useNews";
 import SubHeader from "../../shared-components/layout/SubHeader.vue";
 
 // 검색어 정보 조회 로딩여부
@@ -147,7 +148,7 @@ const selectedPicker = ref([dayjs(), dayjs()]);
 // Vue Router를 가져옵니다.
 const router = useRouter();
 // 검색된 뉴스 정보
-const newsList = computed(() => store.state.news.newsList);
+const { newsList, fetchNews } = useNews();
 
 // 테이블 컬럼
 const columns = [
@@ -164,11 +165,12 @@ const columns = [
   },
 ];
 /**
- * 비활성화 할 날짜를 설정합니다.
+ * 비활성화 할 날짜 설정
  *
  * @param current 현재 날짜
  */
 const disabledDate = (current) => current && current > dayjs().endOf("day");
+
 /**
  * 검색어 등록
  */
@@ -271,17 +273,24 @@ const rowSelection = computed(() => ({
   columnWidth: 70,
 }));
 
+/**
+ * 선택한 검색어, 기간으로 검색 요청
+ *
+ * @async
+ * @function handleSearch
+ */
 const handleSearch = async () => {
   const selectedKey = new Set(selectedRowKeys.value);
+  // 선택한 검색어만 찾는 변수
   const searchQuery = keywordList.value
     .filter((el) => selectedKey.has(el.key))
     .map((el) => el.keyword)
     .join(",");
-  await store.dispatch("news/fetchNews", {
-    queries: searchQuery,
-    startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
-    endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
-  });
+  await fetchNews(
+    searchQuery,
+    dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+    dayjs(selectedPicker.value[1]).format("YYYY.MM.DD")
+  );
 };
 
 onMounted(() => {
