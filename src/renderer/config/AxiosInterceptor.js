@@ -4,7 +4,7 @@ import axios from "axios";
 // eslint-disable-next-line import/no-cycle
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: process.env.VUE_APP_SERVER_URL,
   timeout: 500000,
   withCredentials: true,
 });
@@ -17,6 +17,7 @@ export const setStore = (storeInstance) => {
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", process.env.VUE_APP_SERVER_URL);
     console.log("요청 시작");
     store.dispatch("loading/toggleLoading", true);
     return config;

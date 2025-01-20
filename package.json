@@ -71,6 +71,7 @@
     "core-js": "^3.8.3",
     "crypto-browserify": "^3.12.1",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "electron": "^33.2.1",
     "node-notifier": "^10.0.1",
     "node-polyfill-webpack-plugin": "^4.1.0",
