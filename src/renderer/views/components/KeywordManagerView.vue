@@ -294,6 +294,11 @@ const handleSearch = async () => {
 };
 
 onMounted(() => {
+  if (!isEmpty(keywordList.value)) {
+    selectedRowKeys.value = keywordList.value.map((el) => el.key);
+    return;
+  }
+
   isLoading.value = true;
   store.dispatch("keyword/fetchKeywordList");
 });

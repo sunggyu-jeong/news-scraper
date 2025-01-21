@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "start": "electron .",
+    "start": "concurrently \"npm run serve\" \"npm run start:server\" \"npm run electron:start\"",
+    "start:server": "node src/backend/main.js",
     "build:osx": "electron-builder --mac",
     "build:linux": "npm run build:linux32 && npm run build:linux64",
     "build:linux32": "electron-builder --linux --ia32",
@@ -69,6 +70,11 @@
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "axios": "^1.7.9",
+    "concurrently": "^9.1.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "puppeteer": "^24.1.0",
     "vue": "^3.5.13",
     "vue-loading-overlay": "^6.0.6",
     "vue-router": "^4.5.0",
