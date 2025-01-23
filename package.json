@@ -1,12 +1,16 @@
 {
   "name": "news-scraper",
+  "description": "crawling naver news service",
+  "author": "sunggyujeong",
   "main": "electron/main.js",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "start": "concurrently \"npm run serve\" \"npm run start:server\" \"npm run electron:start\"",
+    "start": "concurrently \"npm run serve\" \"npm run start:server\"",
     "start:server": "node src/backend/main.js",
+    "electron:start": "electron .",
+    "build": "vue-cli-service build",
     "build:osx": "electron-builder --mac",
     "build:linux": "npm run build:linux32 && npm run build:linux64",
     "build:linux32": "electron-builder --linux --ia32",
@@ -29,18 +33,23 @@
       "target": [
         "default"
       ],
-      "icon": "./resources/installer/Icon.icns"
+      "icon": "./resources/installer/icon.icns"
     },
     "dmg": {
-      "title": "HelloElectron",
-      "icon": "./resources/installer/Icon.icns"
+      "title": "NewsScraper",
+      "icon": "./resources/installer/icon.icns"
     },
     "win": {
       "target": [
-        "zip",
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
       ],
-      "icon": "./resources/installer/Icon.ico"
+      "icon": "./resources/installer/icon.ico"
     },
     "linux": {
       "target": [
@@ -54,7 +63,16 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "en_US",
+        "ko-KR"
+      ],
+      "createDesktopShortcut": true,
+      "shortcutName": "news-scraper",
+      "createStartMenuShortcut": true,
+      "menuCategory": "news-scraper"
     },
     "directories": {
       "buildResources": "resources/installer/",
@@ -64,6 +82,8 @@
   },
   "devDependencies": {
     "@vue/cli-service": "^5.0.8",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
     "sass": "^1.83.4",
     "sass-loader": "^16.0.4"
   },
@@ -73,12 +93,15 @@
     "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "electron-router": "^0.5.1",
+    "express": "^4.21.2",
     "helmet": "^8.0.0",
     "puppeteer": "^24.1.0",
     "vue": "^3.5.13",
     "vue-loading-overlay": "^6.0.6",
     "vue-router": "^4.5.0",
     "vuex": "^4.1.0",
+    "wait-on": "^8.0.2",
     "xlsx-js-style": "^1.2.0"
   }
 }

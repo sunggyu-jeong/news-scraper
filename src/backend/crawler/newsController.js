@@ -1,6 +1,11 @@
 // controllers/newsController.js
-import { launch } from "puppeteer";
+const { launch } = require("puppeteer");
 
+const waitForTimeout = (timeout) =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
 /**
  * 요청 유효성 검사
  * @param {Object} req - 요청 정보
@@ -60,6 +65,8 @@ const scrollPageToLoad = async (page, maxScrollAttempts = 20) => {
 
   while (scrollAttempts <= maxScrollAttempts) {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+    await waitForTimeout(800); // 스크롤 로딩 대기
 
     const newHeight = await page.evaluate(() => document.body.scrollHeight);
     console.log(`스크롤 시도 #${scrollAttempts + 1}, ${previousHeight}, ${newHeight}`);
@@ -148,7 +155,7 @@ const extractNewsData = async (page, keyword) => {
 };
 
 // 뉴스 데이터를 크롤링하는 메소드
-export async function getNews(req, res) {
+async function getNews(req, res) {
   if (!validateRequest(req, res)) return;
   const { queries, startDate, endDate } = req.query;
 
@@ -189,3 +196,5 @@ export async function getNews(req, res) {
     });
   }
 }
+
+module.exports = { getNews };

@@ -1,0 +1,9 @@
+appId: com.electron.news-scraper
+productName: MyApp
+files:
+  - src/**
+  - package.json
+asar: true
+extraResources:
+  - from: ./node_modules
+    to: ./node_modules
