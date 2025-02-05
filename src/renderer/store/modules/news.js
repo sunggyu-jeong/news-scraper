@@ -18,7 +18,6 @@ export default {
       try {
         console.log("Fetching news");
         const response = await axiosInstance.get("/api/news", {
-          baseURL: "http://localhost:3001",
           params: {
             queries,
             startDate,

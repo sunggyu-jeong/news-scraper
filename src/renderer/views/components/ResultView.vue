@@ -1,5 +1,5 @@
 <template>
-  <SubHeader title="검색결과" />
+  <SubHeader title="검색결과" :btn-show="true" />
   <div class="result-content-view">
     <span>검색기간: {{ startDate }} ~ {{ endDate }}</span>
     <button @click="exportToExcel">엑셀 다운로드</button>
@@ -265,7 +265,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   margin: 10px;
-  margin-top: 80px;
+  margin-top: 53px;
   align-items: start;
   display: flex;
   font-size: 14px;

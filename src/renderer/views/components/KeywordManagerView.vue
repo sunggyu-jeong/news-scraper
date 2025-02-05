@@ -1,5 +1,5 @@
 <template>
-  <SubHeader title="검색 설정" />
+  <SubHeader title="검색설정" />
   <div class="keyword">
     <div class="keyword-date-picker">
       <h3>검색기간</h3>
@@ -29,7 +29,7 @@
       :data-source="keywordList"
       :pagination="false"
     />
-    <a-float-button-group shape="circle">
+    <a-float-button-group shape="circle" class="floating-group">
       <a-float-button
         type="default"
         :style="{
@@ -105,6 +105,7 @@
       <ArrowRightOutlined />
     </a-button>
   </div>
+  <TabbarView />
 </template>
 
 <script setup>
@@ -122,6 +123,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import useNews from "@/renderer/composables/useNews";
 import SubHeader from "../../shared-components/layout/SubHeader.vue";
+import TabbarView from "@/renderer/components/TabbarView.vue";
 
 // 검색어 정보 조회 로딩여부
 const isLoading = ref(false);
@@ -349,21 +351,24 @@ watch(newsList, (searchNewsList) => {
 .keyword {
   margin-top: 40px;
   margin-bottom: 80px;
-  .keyword-content .ant-spin-container .ant-table-container .ant-table-content {
-    .ant-table-thead {
-      > tr th {
-        text-align: center;
-        font-family: sans-serif;
-        font-size: 14px;
-        font-weight: bold;
+  .keyword-content {
+    padding-bottom: 75px;
+    .ant-spin-container .ant-table-container .ant-table-content {
+      .ant-table-thead {
+        > tr th {
+          text-align: center;
+          font-family: sans-serif;
+          font-size: 14px;
+          font-weight: bold;
+        }
       }
-    }
-    .ant-table-tbody {
-    > tr td {
-        text-align: center;
-        font-family: sans-serif;
-        font-size: 13px;
-        font-weight: normal;
+      .ant-table-tbody {
+      > tr td {
+          text-align: center;
+          font-family: sans-serif;
+          font-size: 13px;
+          font-weight: normal;
+        }
       }
     }
   }
@@ -402,7 +407,7 @@ watch(newsList, (searchNewsList) => {
   display: flex;
   align-items: start;
   flex-direction: column;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   h3 {
     margin:0px;
     margin-top: 16px;
@@ -411,7 +416,8 @@ watch(newsList, (searchNewsList) => {
     font-weight: bold;
   }
   .date-picker {
-    margin-top: 16px;
+    margin-top: 12px;
+    margin-left: -9px;
     .ant-picker {
       border: none;
 
@@ -427,9 +433,13 @@ watch(newsList, (searchNewsList) => {
   margin-left: 5px;
 }
 
+.floating-group {
+  margin-bottom: 48px;
+}
+
 .fixed-bottom-button {
   position: fixed;
-  bottom:20px;
+  bottom:100px;
   left: 50%;
   height: 40px;
   transform: translateX(-50%);
