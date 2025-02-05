@@ -2,6 +2,7 @@
   <header class="sub-header">
     <div class="header-wrap">
       <button
+        v-if="props.btnShow"
         class="btn btn-home"
         @click="navigateToPreviousPage(router)"
         @keydown.enter="navigateToPreviousPage(router)"
@@ -9,6 +10,7 @@
       >
         <img src="../../assets/img/back.png" alt="뒤로가기" class="btn btn-back" />
       </button>
+
       <h1 class="title">{{ props.title }}</h1>
     </div>
   </header>
@@ -24,7 +26,7 @@ const props = defineProps({
   title: String,
   btnShow: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 </script>

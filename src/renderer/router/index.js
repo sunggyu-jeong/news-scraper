@@ -9,7 +9,7 @@ import MasterView from "../views/components/MasterView.vue";
 const routes = [
   {
     path: "/login",
-    name: "login",
+    name: "Login",
     component: LoginView,
   },
   {
@@ -24,17 +24,17 @@ const routes = [
   },
   {
     path: "/search",
-    name: "search",
+    name: "Search",
     component: SearchView,
   },
   {
     path: "/results",
-    name: "results",
+    name: "Results",
     component: ResultView,
   },
   {
     path: "/error",
-    name: "error",
+    name: "Error",
     component: ErrorView,
   },
 ];
