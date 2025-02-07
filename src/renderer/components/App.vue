@@ -6,7 +6,7 @@
   </a-config-provider>
 </template>
 
-<script>
+<script setup lang="ts">
 import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import dayjs from "dayjs";
@@ -16,28 +16,18 @@ import LoadingBar from "./LoadingBar.vue";
 
 dayjs.locale("ko");
 
-export default {
-  components: {
-    LoadingBar,
-  },
-  setup() {
-    const store = useStore();
-    const isLoading = computed(() => store.state.loading.isLoading);
+const store = useStore();
+const isLoading = computed(() => store.state.loading.isLoading);
 
-    watch(
-      () => store.state.errorMessage,
-      (newErrorMessage) => {
-        if (newErrorMessage) {
-          message.warn(newErrorMessage);
-          store.dispatch("clearErrorMessage");
-        }
-      }
-    );
-    return {
-      isLoading,
-    };
-  },
-};
+watch(
+  () => store.state.errorMessage,
+  (newErrorMessage) => {
+    if (newErrorMessage) {
+      message.warn(newErrorMessage);
+      store.dispatch("clearErrorMessage");
+    }
+  }
+);
 </script>
 <style>
 #app {

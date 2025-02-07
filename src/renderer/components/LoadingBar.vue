@@ -8,21 +8,14 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "LoadingBar",
-  props: {
-    isLoading: {
-      type: Boolean,
-      required: true,
-    },
+<script setup lang="ts">
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    required: true,
   },
-  methods: {
-    onCancel() {
-      console.log("onCancel");
-    },
-  },
-};
+});
+
 </script>
 
 <style lang="scss" scoped>

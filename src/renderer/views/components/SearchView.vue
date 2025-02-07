@@ -37,7 +37,7 @@
   <TabbarView />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { isEmpty } from "@/shared/utils";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";

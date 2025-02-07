@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";

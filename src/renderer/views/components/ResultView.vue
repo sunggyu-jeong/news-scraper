@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";

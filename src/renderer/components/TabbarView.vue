@@ -8,13 +8,13 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router";
 import { computed, ref, onMounted, watch } from "vue";
 import TabbarIcons from "./TabbarIcons.vue";
 import { AppstoreAddOutlined, SearchOutlined } from "@ant-design/icons-vue";
 
-// `tabIconsWithColor` 계산하기
+// `tabIconsWithColor` 계산하
 const tabIconsWithColor = computed(() => {
   return Object.keys(tabIcons).reduce((acc, key) => {
     acc[key] = {

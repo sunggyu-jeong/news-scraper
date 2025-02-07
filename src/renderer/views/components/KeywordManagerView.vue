@@ -108,7 +108,7 @@
   <TabbarView />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref, unref, watch } from "vue";
 import {
   PlusCircleOutlined,
