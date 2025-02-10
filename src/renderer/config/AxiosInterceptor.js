@@ -4,7 +4,7 @@ import axios from "axios";
 // eslint-disable-next-line import/no-cycle
 
 const axiosInstance = axios.create({
-  baseURL: "/api/proxy",
+  baseURL: process.env.VUE_APP_SERVER_URL,
   timeout: 500000,
   withCredentials: true,
 });
