@@ -2,13 +2,13 @@
   "name": "news-scraper",
   "description": "crawling naver news service",
   "author": "sunggyujeong",
-  "main": "electron/main.js",
+  "main": "electron/main.ts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "start": "concurrently \"npm run serve\" \"npm run start:server\"",
-    "start:server": "node src/backend/main.js",
+    "start:server": "node src/backend/main.ts",
     "electron:start": "electron .",
     "build": "vue-cli-service build",
     "build:osx": "electron-builder --mac",
@@ -81,11 +81,18 @@
     }
   },
   "devDependencies": {
+    "@types/webpack-env": "^1.18.8",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
     "@vue/cli-service": "^5.0.8",
     "electron": "^34.0.0",
     "electron-builder": "^25.1.8",
     "sass": "^1.83.4",
-    "sass-loader": "^16.0.4"
+    "sass-loader": "^16.0.4",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.7.3",
+    "vue-loader": "^17.4.2",
+    "vue-tsc": "^2.2.0"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.6",

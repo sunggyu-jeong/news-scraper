@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "esnext", // 최신 ECMAScript 버전으로 트랜스파일
+    "module": "esnext", // 모듈 시스템을 ESNext로 설정
+    "moduleResolution": "node", // 모듈 해석 방식을 Node.js 스타일로 설정
+    "strict": true, // 엄격한 타입 검사 활성화
+    "jsx": "react-jsx", // JSX 문법 (Vue에서는 기본적으로 필요없음)
+    "esModuleInterop": true, // ES 모듈 호환 설정
+    "skipLibCheck": true, // 라이브러리 파일 검사를 건너뛰어 성능 향상
+    "forceConsistentCasingInFileNames": true, // 파일 이름 대소문자 일관성 강제
+    "lib": ["dom", "esnext"], // 브라우저와 최신 ECMAScript 기능 포함
+    "types": ["webpack-env", "vue"], // Webpack 환경과 Vue 타입을 포함
+    "allowJs": false // JavaScript 파일을 TypeScript로 처리하지 않음
+  },
+  "include": ["src/renderer/**/*"],
+  "exclude": ["node_modules"]
+}
