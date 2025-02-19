@@ -146,7 +146,7 @@ const inputKeywordList = ref([]);
 // 현재 입력한 검색어
 const inputKeyword = ref("");
 // 선택한 기간의 시작일과 종료일을 저장하는 변수
-const selectedPicker = ref([dayjs(), dayjs()]);
+const selectedPicker = ref([dayjs().add(-1, "day"), dayjs()]);
 // Vue Router를 가져옵니다.
 const router = useRouter();
 // 검색된 뉴스 정보
