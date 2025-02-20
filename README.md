@@ -1,4 +1,4 @@
-# NewsScraper
+![Image](https://github.com/user-attachments/assets/cbe42540-59af-4e8d-8f59-eb22f0159870)
 
 Vue + Vuex 기반의 프론트엔드 프로젝트.
 
