@@ -26,6 +26,12 @@
         <button class="delete-button" @click="clearSearchResults">X</button>
       </section>
     </div>
+    <div class="description-content">
+      <span class="description"
+        >검색하실 검색어를 콤마로 연결해 주시면 다건 검색이 가능합니다.</span
+      >
+      <span class="description-ex">예) 검색어1,검색어2</span>
+    </div>
     <div className="date-picker">
       <a-range-picker
         v-model:value="selectedPicker"
@@ -45,6 +51,7 @@ import { useStore } from "vuex";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
 import TabbarView from "@/renderer/components/TabbarView.vue";
+import useNews from "@/renderer/composables/useNews";
 
 // 검색어를 저장하는 변수
 const searchQuery = ref("");
@@ -57,7 +64,9 @@ const router = useRouter();
 // 검색어가 입력됨을 감지하고, 검색어가 입력되면 초기화 버튼을 생성합니다.
 const showDeleteButton = computed(() => !isEmpty(searchQuery.value));
 // 선택한 기간의 시작일과 종료일을 저장하는 변수
-const selectedPicker = ref([dayjs(), dayjs()]);
+const selectedPicker = ref([dayjs().add(-1, "day"), dayjs()]);
+// 검색된 뉴스 정보
+const { newsList, fetchNews } = useNews();
 
 /**
  * 검색어를 입력하고 엔터를 누르면 검색을 수행합니다.
@@ -66,23 +75,30 @@ const selectedPicker = ref([dayjs(), dayjs()]);
  */
 const handleSearch = async () => {
   try {
-    await store.dispatch("fetchNews", {
-      queries: searchQuery.value,
-      startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
-      endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
-    });
-    // Electron에서만 동작합니다.
-    if (!isEmpty(window?.electron?.ipcRenderer)) {
-      window?.electron?.ipcRenderer?.send("show-notification", {
-        title: "검색 완료",
-        body: "뉴스 검색이 완료되었습니다.",
-      });
-    }
+    await fetchNews(
+      searchQuery.value,
+      dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+      dayjs(selectedPicker.value[1]).format("YYYY.MM.DD")
+    );
   } catch (error) {
     console.log(error);
     message.error(error);
   }
 };
+
+watch(newsList, (searchNewsList) => {
+  if (isEmpty(searchNewsList.length)) {
+    message.warning("검색된 정보가 없습니다.");
+    return;
+  }
+  router.push({
+    path: "/results",
+    query: {
+      startDate: dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
+      endDate: dayjs(selectedPicker.value[1]).format("YYYY.MM.DD"),
+    },
+  });
+});
 
 /**
  * 검색어를 초기화합니다.
@@ -122,6 +138,23 @@ watch(news, (newValue) => {
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  .description-content {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.71428571;
+    color: #212121;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+
+    .description {
+      font-size: 12px;
+    }
+  }
+
   .logo {
     margin: 0;
     width: 306px;

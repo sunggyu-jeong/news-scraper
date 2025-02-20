@@ -2,22 +2,10 @@
   "name": "news-scraper",
   "description": "crawling naver news service",
   "author": "sunggyujeong",
-  "main": "electron/main.js",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "start": "concurrently \"npm run serve\" \"npm run start:server\"",
-    "start:server": "node src/backend/main.js",
-    "electron:start": "electron .",
-    "build": "vue-cli-service build",
-    "build:osx": "electron-builder --mac",
-    "build:linux": "npm run build:linux32 && npm run build:linux64",
-    "build:linux32": "electron-builder --linux --ia32",
-    "build:linux64": "electron-builder --linux --x64",
-    "build:win": "npm run build:win32 && npm run build:win64",
-    "build:win32": "electron-builder --win --ia32",
-    "build:win64": "electron-builder --win --x64"
+    "serve": "vue-cli-service serve"
   },
   "build": {
     "productName": "NewsScraper",

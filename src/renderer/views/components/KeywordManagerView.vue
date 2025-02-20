@@ -288,13 +288,6 @@ const handleSearch = async () => {
     .filter((el) => selectedKey.has(el.key))
     .map((el) => el.keyword)
     .join(",");
-  try {
-    store.dispatch("loading/toggleLoading", true);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    store.dispatch("loading/toggleLoading", false);
-  }
   await fetchNews(
     searchQuery,
     dayjs(selectedPicker.value[0]).format("YYYY.MM.DD"),
