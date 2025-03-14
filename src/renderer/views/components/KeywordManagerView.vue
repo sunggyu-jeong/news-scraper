@@ -24,8 +24,8 @@
     <a-table
       v-else
       class="keyword-content"
-      :row-selection="rowSelection"
       :columns="columns"
+      :row-selection="rowSelection"
       :data-source="keywordList"
       :pagination="false"
     />
@@ -335,7 +335,7 @@ watch(newsList, (searchNewsList) => {
 });
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .delete-content {
   margin-top: 50px;
   text-align: end;
