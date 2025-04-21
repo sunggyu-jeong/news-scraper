@@ -12,7 +12,7 @@
 import { useRoute } from "vue-router";
 import { computed, ref, onMounted, watch } from "vue";
 import TabbarIcons from "./TabbarIcons.vue";
-import { AppstoreAddOutlined, SearchOutlined } from "@ant-design/icons-vue";
+import { AppstoreAddOutlined, SearchOutlined, SettingOutlined } from "@ant-design/icons-vue";
 
 // `tabIconsWithColor` 계산하기
 const tabIconsWithColor = computed(() => {
@@ -32,11 +32,13 @@ const color = { default: "#89919D", active: "#CA413C" };
 const tabIcons = {
   Search: { icon: SearchOutlined, text: "검색" },
   SearchKeywords: { icon: AppstoreAddOutlined, text: "키워드" },
+  Batch: { icon: SettingOutlined, text: "배치관리" },
 };
 /** 버튼 활성화 상태를 관리하는 상태 변수 */
 const buttonActiveStates = ref({
   Search: false,
   SearchKeywords: false,
+  Batch: false,
 });
 
 /**
