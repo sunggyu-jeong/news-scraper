@@ -1,7 +1,6 @@
 /* eslint-disable dot-notation */
 import $router from "@/renderer/router/index";
 import axios from "axios";
-// eslint-disable-next-line import/no-cycle
 
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_SERVER_URL,

@@ -1,8 +1,9 @@
 import { createStore } from "vuex";
-import auth from "./modules/auth";
-import loading from "./modules/loading";
-import news from "./modules/news";
-import keyword from "./modules/keyword";
+import auth from "./modules/auth.js";
+import loading from "./modules/loading.js";
+import news from "./modules/news.js";
+import keyword from "./modules/keyword.js";
+import batchUser from "./modules/batchUser.js";
 
 export default createStore({
   state: {
@@ -29,5 +30,6 @@ export default createStore({
     loading,
     news,
     keyword,
+    batchUser
   },
 });

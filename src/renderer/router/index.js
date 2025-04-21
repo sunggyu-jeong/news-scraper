@@ -5,6 +5,7 @@ import ErrorView from "../shared-components/ErrorView.vue";
 import LoginView from "../views/components/LoginView.vue";
 import SearchKeywordManagerView from "../views/components/KeywordManagerView.vue";
 import MasterView from "../views/components/MasterView.vue";
+import BatchView from "../views/components/BatchView.vue";
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
     path: "/search",
     name: "Search",
     component: SearchView,
+  },
+  {
+    path: "/batch-manage",
+    name: "Batch",
+    component: BatchView,
   },
   {
     path: "/results",

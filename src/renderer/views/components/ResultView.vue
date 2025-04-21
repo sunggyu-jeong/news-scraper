@@ -2,7 +2,7 @@
   <SubHeader title="검색결과" :btn-show="true" />
   <div class="result-content-view">
     <span>검색기간: {{ startDate }} ~ {{ endDate }}</span>
-    <button @click="exportToExcel">엑셀 다운로드</button>
+    <button type="button" @click="exportToExcel">엑셀 다운로드</button>
   </div>
   <div v-if="isMobile" class="card-view">
     <div v-for="(item, index) in newsList" :key="index" class="card">
@@ -15,7 +15,7 @@
           <span class="title">{{ item.title }}</span>
           <span class="source">{{ `${item.source} | ${item.keyword}` }}</span>
         </div>
-        <a :href="item.link" target="_blank" class="link">
+        <a :href="item.link" target="_blank" rel="noopener noreferrer" class="link">
           <img src="../../assets/img/forward.png" alt="arrow" class="arrow" />
         </a>
       </a-space>
@@ -30,7 +30,7 @@
     >
       <template #bodyCell="{ column, text }">
         <template v-if="column.dataIndex === 'link'">
-          <a :href="text" target="_blank">{{ text }}</a>
+          <a :href="text" target="_blank" rel="noopener noreferrer">{{ text }}</a>
         </template>
       </template>
     </a-table>

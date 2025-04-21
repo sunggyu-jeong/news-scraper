@@ -11,7 +11,7 @@
         />
       </div>
     </div>
-    <template v-if="isLoading">
+    <div v-if="isLoading">
       <a-skeleton
         v-for="n in 5"
         :key="n"
@@ -20,7 +20,7 @@
         :title="false"
         :paragraph="{ rows: 3 }"
       />
-    </template>
+    </div>
     <a-table
       v-else
       class="keyword-content"
@@ -37,21 +37,23 @@
         }"
         @click="handleVisibleAddModal(true)"
       >
-        <template #tooltip>
+        <div slot="tooltip">
           <div>검색어 추가하기</div>
-        </template>
-        <template #icon> <PlusCircleOutlined /> </template>
+        </div>
+        <div slot="icon">
+          <PlusCircleOutlined />
+        </div>
       </a-float-button>
       <a-float-button
         :badge="{ count: selectedKeywordCount, overflowCount: 999 }"
         @click="handleVisibleDeleteModal(true)"
       >
-        <template #tooltip>
+        <div slot="tooltip">
           <div>검색어 삭제하기</div>
-        </template>
-        <template #icon>
+        </div>
+        <div slot="icon">
           <DeleteOutlined />
-        </template>
+        </div>
       </a-float-button>
     </a-float-button-group>
     <a-modal
@@ -117,11 +119,11 @@ import {
   ArrowRightOutlined,
 } from "@ant-design/icons-vue";
 import dayjs from "dayjs";
-import { isEmpty } from "@/shared/utils";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import useNews from "@/renderer/composables/useNews";
+import { isEmpty } from "@/shared/utils.js";
+import useNews from "@/renderer/composables/useNews.js";
 import SubHeader from "../../shared-components/layout/SubHeader.vue";
 import TabbarView from "@/renderer/components/TabbarView.vue";
 
