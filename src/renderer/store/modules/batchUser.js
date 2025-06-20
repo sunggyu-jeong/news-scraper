@@ -83,8 +83,7 @@ export default {
     async manualBatch({ commit }, jobName) {
       try {
         await axiosInstance.post(`/api/batchjob/manual/run`, 
-          { jobName },
-          { baseURL: 'https://news-scraper-batch-production.up.railway.app' }
+          { jobName }
         );
       } catch (error) {
         commit(
